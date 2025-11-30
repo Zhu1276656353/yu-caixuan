@@ -44,7 +44,7 @@ const handleCategoryClick = (item) => {
     const categoryRoutes = {
         '淡水生物': '/freshwaterFish',
         '海洋生物': '/saltwaterFish',
-        '精选器械': '/fishTool'
+        '精选器材': '/fishTool'
     }
 
     // 获取对应的路由路径

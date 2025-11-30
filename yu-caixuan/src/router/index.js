@@ -10,6 +10,7 @@ const router = createRouter({
       name: 'login',
       component: () => import('../views/LoginView.vue'),
     },
+    //前端路由
     {
       path: "/",
       name: "layout",
@@ -59,11 +60,6 @@ const router = createRouter({
           },
         },
         {
-          path: "upload",
-          name: "upload",
-          component: () => import('../views/uploadView.vue'),
-        },
-        {
           path: "/user",
           name: "user",
           component: () => import('../views/UserView.vue'),
@@ -71,16 +67,104 @@ const router = createRouter({
             requireAuth: true
           },
         },
+        // {
+        //   path:"/user/orders",
+        //   name:"userOrders",
+        //   component: () => import('../views/userOrder.vue'),
+        //   meta: {
+        //     requireAuth: true
+        //   },
+        // },
         {
-          path: "/productDetails/:cid",
+          path: "/productDetails/:id",
           name: "productDetails",
           component: () => import('../views/productDetails.vue'),
           meta: {
             requireAuth: true
           }
+        },
+        {
+          path: "/checkout",
+          name: "checkout",
+          component: () => import('../views/checkout.vue'),
+          meta: {
+            requireAuth: true
+          }
+        },
+      ]
+    },
+    // 后台管理系统路由
+    {
+      path: "/backend",
+      name: "backend",
+      component: () => import('../views/Backend/backend.vue'),
+      children: [
+        {
+          path: "/backend/backendHome",
+          name: "backendHome",
+          component: () => import('../views/Backend/backendHome.vue'),
+          meta: {
+            requireAuth: true
+          }
+        },
+        {
+          path: "/backend/usersManage",
+          name: "userManage",
+          component: () => import('../views/Backend/userManage.vue'),
+          meta: {
+            requireAuth: true
+          }
+        },
+        {
+          path: "/backend/upload",
+          name: "upload",
+          component: () => import('../views/Backend/uploadView.vue'),
+          meta: {
+            requireAuth: true
+          }
+        },
+        {
+          path: "/backend/backendOrder",
+          name: "backendOrder",
+          component: () => import('../views/Backend/backendOrder.vue'),
+          meta: {
+            requireAuth: true
+          }
+        },
+        {
+          path: "/backend/goodsManage",
+          name: "goodsManage",
+          component: () => import('../views/Backend/goodsManage.vue'),
+          children: [
+            {
+              path: "/backend/goodsManage/freshwaterFishManage",
+              name: "freshwaterFishManage",
+              component: () => import('../views/Backend/freshwaterFishManage.vue'),
+              meta: {
+                requireAuth: true
+              }
+            },
+            {
+              path: "/backend/goodsManage/saltwaterFishManage",
+              name: "saltwaterFishManage",
+              component: () => import('../views/Backend/saltwaterFishManage.vue'),
+              meta: {
+                requireAuth: true
+              }
+            },
+            {
+              path: "/backend/goodsManage/fishToolManage",
+              name: "fishToolManage",
+              component: () => import('../views/Backend/fishToolManage.vue'),
+              meta: {
+                requireAuth: true
+              }
+            }
+          ]
         }
       ]
     },
+
   ],
 })
 // 在路由跳转之前进行验证

@@ -40,8 +40,8 @@ router.post('/uploads', upload.single('file'), (req, res) => {
     }
 
     // 获取额外参数
-    const { productId, productName, price, introduce, cid } = req.body;
-    console.log('解析参数:', { productId, productName, price, introduce, cid });
+    const { productId, productName, price, introduce, productType } = req.body;
+    console.log('解析参数:', { productId, productName, price, introduce, productType });
 
     // 文件信息
     const fileInfo = {
@@ -83,17 +83,29 @@ router.post('/uploads', upload.single('file'), (req, res) => {
             }
         });
     }
-    /**
-     * 
-     * ！！！！创建产品
-     * 
-     */
-    // 如果提供了产品名称和价格，则创建新产品
-    else if (productName && price) {
-        console.log('创建新产品:', { productName, price, introduce, cid });
-        // 插入新产品记录，包含introduce和cid字段
-        const sql = `INSERT INTO fishtool (name, price, image, introduce, cid) VALUES (?, ?, ?, ?, ?)`;
-        const params = [productName, price, fileInfo.path, introduce || '', cid || null];
+    // 如果提供了产品名称、价格和类型，则创建新产品
+    else if (productName && price && productType) {
+        console.log('创建新产品:', { productName, price, introduce, productType });
+
+        // 根据类型确定目标表
+        let targetTable;
+        switch (productType) {
+            case 'fishtool':
+                targetTable = 'fishtool';
+                break;
+            case 'freshwaterfish':
+                targetTable = 'freshwaterfish';
+                break;
+            case 'saltwaterfish':
+                targetTable = 'saltwaterfish';
+                break;
+            default:
+                targetTable = 'fishtool'; // 默认表
+        }
+
+        // 插入新产品记录
+        const sql = `INSERT INTO ${targetTable} (name, price, image, introduce) VALUES (?, ?, ?, ?)`;
+        const params = [productName, price, fileInfo.path, introduce || ''];
         console.log('执行SQL:', sql, '参数:', params);
 
         sqlConnect(sql, params, result => {
@@ -108,7 +120,7 @@ router.post('/uploads', upload.single('file'), (req, res) => {
                         productName: productName,
                         price: price,
                         introduce: introduce || '',
-                        cid: cid || null
+                        productType: productType // 添加productType到返回数据
                     }
                 });
             } else {
@@ -148,12 +160,14 @@ router.post("/login", (req, res) => {
             const token = jsonwebtoken.sign({
                 id: result[0].id,
                 username: result[0].username,
+                permission: result[0].permission
             }, jsonwebtokenSecret.secret); // 使用密钥加密生成 token
 
             // 登录成功，返回用户信息和 token
             res.send({
                 status: 200,
                 username: result[0].username,
+                permission: result[0].permission,
                 token
             });
         } else {
@@ -170,7 +184,7 @@ router.post("/login", (req, res) => {
  */
 router.post("/register", (req, res) => {
     const { username, password, phone, email } = req.body;
-    const sql = `insert into user (username, password, phone, email) values (?, ?, ?, ?)`;
+    const sql = `insert into user (username, password, phone, email, permission) values (?, ?, ?, ?, 'vip')`;
     sqlConnect(sql, [username, password, phone, email], result => {
         if (result.affectedRows > 0) {
             res.send({
@@ -225,11 +239,19 @@ router.get("/category", (req, res) => {
  * 热销推荐接口
  */
 router.get("/hotProducts", (req, res) => {
-    const sql = `select * from hotproducts`;
-    sqlConnect(sql, [], result => {
-        res.send({
-            status: 200,
-            data: result
+    const freshwaterfishSql = `select * from freshwaterfish limit 4, 4`;
+    const saltwaterfishSql = `select * from saltwaterfish limit 4, 5`;
+    // 执行淡水生物查询
+    sqlConnect(freshwaterfishSql, [], freshwaterResult => {
+        // 执行海水生物查询
+        sqlConnect(saltwaterfishSql, [], saltwaterResult => {
+            res.send({
+                status: 200,
+                data: {
+                    freshwaterfish: freshwaterResult,
+                    saltwaterfish: saltwaterResult
+                }
+            });
         });
     });
 })
@@ -238,9 +260,9 @@ router.get("/hotProducts", (req, res) => {
  */
 router.get("/newProducts", (req, res) => {
     // 获取第一条数据
-    const firstSql = `select * from newproducts limit 1`;
+    const firstSql = `select * from freshwaterfish order by id desc limit 1`;
     // 获取其余五条数据
-    const otherSql = `select * from newproducts limit 1, 5`;
+    const otherSql = `select * from saltwaterfish order by id desc limit 5`;
 
     sqlConnect(firstSql, [], firstResult => {
         sqlConnect(otherSql, [], otherResult => {
@@ -267,7 +289,7 @@ router.get("/footer", (req, res) => {
     })
 })
 /**
- * 淡水生物
+ * 淡水生物 
  */
 router.get("/freshwaterfish", (req, res) => {
     // 分页处理
@@ -313,7 +335,7 @@ router.get("/freshwaterfishtotal", (req, res) => {
         }
     });
 });
-/**
+/** 
  * 淡水生物模糊查询
  */
 router.get("/freshwaterfish/search", (req, res) => {
@@ -588,7 +610,7 @@ router.post('/updateUserInfo', function (req, res) {
 /**
  * 商品详情接口
  */
-router.get("/productdetails", (req, res) => { 
+router.get("/productdetails", (req, res) => {
     const cid = req.query.cid;
     const sql = `SELECT * FROM productdetails WHERE cid = ?`;
     sqlConnect(sql, [cid], result => {
@@ -604,5 +626,576 @@ router.get("/productdetails", (req, res) => {
             });
         }
     });
+})
+/**
+ * 提交订单接口实现
+ */
+router.post("/checkout", (req, res) => {
+    const { name, phone, address, remark, items, totalAmount } = req.body;
+
+    // console.log('接收到的订单数据:', req.body); // 调试用
+
+    // 验证必要字段
+    if (!name || !phone || !address || !items || !Array.isArray(items)) {
+        return res.send({
+            status: 400,
+            msg: '缺少必要参数或商品信息格式错误'
+        });
+    }
+
+    // 生成订单号
+    const orderNumber = 'ORD' + Date.now() + Math.floor(Math.random() * 1000);
+
+    // 处理商品信息，确保数据完整性
+    const processedItems = items.map(item => {
+        return {
+            id: item.id || null,
+            name: item.name || '',
+            price: parseFloat(item.price) || 0,
+            image: item.image || '',
+            quantity: parseInt(item.quantity) || 0
+        };
+    });
+
+    // console.log('处理后的商品数据:', processedItems); // 调试用
+
+    // 过滤掉无效的商品项
+    const validItems = processedItems.filter(item =>
+        item.name && item.price > 0 && item.quantity > 0
+    );
+
+    if (validItems.length === 0) {
+        return res.send({
+            status: 400,
+            msg: '没有有效的商品信息'
+        });
+    }
+
+    // 将商品信息转换为 JSON 字符串
+    let itemsJson;
+    try {
+        itemsJson = JSON.stringify(validItems);
+        console.log('序列化后的商品数据:', itemsJson); // 调试用
+    } catch (error) {
+        console.error('序列化商品数据失败:', error);
+        return res.send({
+            status: 500,
+            msg: '商品信息序列化失败'
+        });
+    }
+
+    // 确保总金额是数字
+    const orderTotalAmount = parseFloat(totalAmount) || 0;
+
+    // 插入订单数据
+    /**
+     * 默认订单状态为 0（待付款）
+     */
+    const sql = `INSERT INTO orders (order_number, name, phone, address, remark, items, total_amount, status) VALUES (?, ?, ?, ?, ?, ?, ?, 0)`;
+    const params = [orderNumber, name, phone, address, remark || '', itemsJson, orderTotalAmount];
+
+    console.log('准备执行的SQL:', sql); // 调试用
+    console.log('SQL参数:', params); // 调试用
+
+    sqlConnect(sql, params, result => {
+        if (result.affectedRows > 0) {
+            res.send({
+                status: 200,
+                msg: '订单提交成功',
+                data: {
+                    orderId: result.insertId,
+                    orderNumber
+                }
+            });
+        } else {
+            res.send({
+                status: 500,
+                msg: '订单提交失败'
+            });
+        }
+    });
+});
+/**
+ * 后台管理系统 - 用户管理接口
+ */
+router.get("/backend/users", (req, res) => {
+    const sql = "SELECT id, username, phone, email, permission FROM user"; // 避免返回密码字段
+    sqlConnect(sql, null, result => {
+        res.send({
+            status: 200,
+            data: result,
+            total: result.length
+        });
+    });
+});
+/**
+ * 后台管理系统 - 增加用户接口
+ */
+router.post("/backend/users/add", (req, res) => {
+    const { username, password, phone, email, permission } = req.body;
+    const sql = `INSERT INTO user (username, password, phone, email, permission) VALUES (?, ?, ?, ?, ?)`;
+    const params = [username, password, phone, email, permission];
+    sqlConnect(sql, params, result => {
+        if (result.affectedRows > 0) {
+            res.send({
+                status: 200,
+                msg: "用户添加成功"
+            });
+        }
+        else {
+            res.send({
+                status: 500,
+                msg: "用户添加失败"
+            });
+        }
+    });
+})
+/**
+ * 后台管理系统 - 删除用户接口
+ */
+router.post("/backend/users/delete", (req, res) => {
+    const { id } = req.body;
+    const sql = `DELETE FROM user WHERE id = ?`;
+    sqlConnect(sql, [id], result => {
+        if (result.affectedRows > 0) {
+            res.send({
+                status: 200,
+                msg: "用户删除成功"
+            });
+        } else {
+            res.send({
+                status: 500,
+                msg: "用户删除失败"
+            });
+        }
+    });
+});
+/**
+ * 后台管理系统 - 修改用户信息接口
+ */
+router.post("/backend/users/update", (req, res) => {
+    const { id, username, password, phone, email, permission } = req.body;
+    let sql, params;
+    // 如果密码为空，则不更新密码
+    if (password && password.trim() !== '') {
+        sql = `UPDATE user SET username = ?, password = ?, phone = ?, email = ?, permission = ? WHERE id = ?`;
+        params = [username, password, phone, email, permission, id];
+    } else {
+        sql = `UPDATE user SET username = ?, phone = ?, email = ?, permission = ? WHERE id = ?`;
+        params = [username, phone, email, permission, id];
+    }
+
+    sqlConnect(sql, params, result => {
+        if (result.affectedRows > 0) {
+            res.send({
+                status: 200,
+                msg: "用户信息修改成功"
+            });
+        } else {
+            res.send({
+                status: 500,
+                msg: "用户信息修改失败"
+            });
+        }
+    });
+});
+/**
+ * 后台管理系统 - 搜索用户信息
+ */
+router.get("/backend/users/search", (req, res) => {
+    const search = url.parse(req.url, true).query.search;
+    const sql = `SELECT id, username, phone, email, permission FROM user WHERE username LIKE '%${search}%'`;
+    sqlConnect(sql, null, result => {
+        if (result.length > 0) {
+            res.send({
+                status: 200,
+                data: result
+            });
+        } else {
+            res.send({
+                status: 500,
+                msg: '暂无数据'
+            });
+        }
+    })
+})
+/**
+ * 后台管理系统 - 商品管理接口 - 获取淡水生物
+ */
+router.get("/backend/goods/freshwaterfish", (req, res) => {
+    // 分页处理
+    const page = parseInt(req.query.page) || 1; // 获取当前页码，默认为1
+    const pageSize = 10; // 每页显示的数据条数
+    const offset = (page - 1) * pageSize; // 计算偏移量
+    // 查询语句：每次获取10条数据
+    const sql = `SELECT * FROM freshwaterfish ORDER BY id DESC LIMIT ${pageSize} OFFSET ${offset}`;
+
+    // 查询总记录数
+    const countSql = "SELECT COUNT(*) as total FROM freshwaterfish";
+
+    sqlConnect(sql, null, result => {
+        sqlConnect(countSql, null, countResult => {
+            const total = countResult[0].total;
+            const totalPages = Math.ceil(total / pageSize);
+
+            res.send({
+                status: 200,
+                data: result,
+                pagination: {
+                    currentPage: page,
+                    pageSize: pageSize,
+                    total: total,
+                    totalPages: totalPages
+                }
+            });
+        });
+    });
+});
+/**
+ * 后台管理系统 - 商品管理接口 - 搜索淡水生物
+ */
+router.get("/backend/goods/freshwaterfish/search", (req, res) => {
+    const search = url.parse(req.url, true).query.search;
+    const sql = `SELECT * FROM freshwaterfish WHERE name LIKE '%${search}%'`;
+    sqlConnect(sql, null, result => {
+        if (result.length > 0) {
+            res.send({
+                status: 200,
+                data: result
+            });
+        } else {
+            res.send({
+                status: 500,
+                msg: '暂无数据'
+            });
+        }
+    })
+});
+/**
+ * 后台管理系统 - 商品管理接口 - 删除淡水生物
+ */
+router.post("/backend/goods/freshwaterfish/delete", (req, res) => {
+    const { id } = req.body;
+    const sql = `DELETE FROM freshwaterfish WHERE id = ?`;
+    sqlConnect(sql, [id], result => {
+        if (result.affectedRows > 0) {
+            res.send({
+                status: 200,
+                msg: "删除成功"
+            });
+        } else {
+            res.send({
+                status: 500,
+                msg: "删除失败"
+            });
+        }
+    })
+})
+/**
+ * 后台管理系统 - 商品管理接口 - 修改淡水生物
+ */
+router.post("/backend/goods/freshwaterfish/update", (req, res) => {
+    const { id, name, price, image, introduce } = req.body;
+    const sql = `UPDATE freshwaterfish SET name = ?, price = ?, image = ?, introduce = ? WHERE id = ?`;
+    const params = [name, price, image, introduce, id];
+    sqlConnect(sql, params, result => {
+        if (result.affectedRows > 0) {
+            res.send({
+                status: 200,
+                msg: "修改成功"
+            });
+        } else {
+            res.send({
+                status: 500,
+                msg: "修改失败"
+            });
+        }
+    })
+})
+/**
+ * 后台管理系统 - 商品管理接口 - 获取海洋生物
+ */
+router.get("/backend/goods/saltwaterfish", (req, res) => {
+    // 分页处理
+    const page = parseInt(req.query.page) || 1; // 获取当前页码，默认为1
+    const pageSize = 10; // 每页显示的数据条数
+    const offset = (page - 1) * pageSize; // 计算偏移量
+    // 查询语句：每次获取10条数据
+    const sql = `SELECT * FROM saltwaterfish ORDER BY id DESC LIMIT ${pageSize} OFFSET ${offset}`;
+
+    // 查询总记录数
+    const countSql = "SELECT COUNT(*) as total FROM saltwaterfish";
+
+    sqlConnect(sql, null, result => {
+        sqlConnect(countSql, null, countResult => {
+            const total = countResult[0].total;
+            const totalPages = Math.ceil(total / pageSize);
+
+            res.send({
+                status: 200,
+                data: result,
+                pagination: {
+                    currentPage: page,
+                    pageSize: pageSize,
+                    total: total,
+                    totalPages: totalPages
+                }
+            });
+        });
+    });
+});
+/**
+ * 后台管理系统 - 商品管理接口 - 搜索海洋生物
+ */
+router.get("/backend/goods/saltwaterfish/search", (req, res) => {
+    const search = url.parse(req.url, true).query.search;
+    const sql = `SELECT * FROM saltwaterfish WHERE name LIKE '%${search}%'`;
+    sqlConnect(sql, null, result => {
+        if (result.length > 0) {
+            res.send({
+                status: 200,
+                data: result
+            });
+        } else {
+            res.send({
+                status: 500,
+                msg: '暂无数据'
+            });
+        }
+    })
+});
+/**
+ * 后台管理系统 - 商品管理接口 - 删除海洋生物
+ */
+router.post("/backend/goods/saltwaterfish/delete", (req, res) => {
+    const { id } = req.body;
+    const sql = `DELETE FROM saltwaterfish WHERE id = ?`;
+    sqlConnect(sql, [id], result => {
+        if (result.affectedRows > 0) {
+            res.send({
+                status: 200,
+                msg: "删除成功"
+            });
+        } else {
+            res.send({
+                status: 500,
+                msg: "删除失败"
+            });
+        }
+    })
+})
+/**
+ * 后台管理系统 - 商品管理接口 - 修改海洋生物
+ */
+router.post("/backend/goods/saltwaterfish/update", (req, res) => {
+    const { id, name, price, image, introduce } = req.body;
+    const sql = `UPDATE saltwaterfish SET name = ?, price = ?, image = ?, introduce = ? WHERE id = ?`;
+    const params = [name, price, image, introduce, id];
+    sqlConnect(sql, params, result => {
+        if (result.affectedRows > 0) {
+            res.send({
+                status: 200,
+                msg: "修改成功"
+            });
+        } else {
+            res.send({
+                status: 500,
+                msg: "修改失败"
+            });
+        }
+    })
+})
+/**
+ * 后台管理系统 - 商品管理接口 - 获取精选器械
+ */
+router.get("/backend/goods/fishtool", (req, res) => {
+    // 分页处理
+    const page = parseInt(req.query.page) || 1; // 获取当前页码，默认为1
+    const pageSize = 10; // 每页显示的数据条数
+    const offset = (page - 1) * pageSize; // 计算偏移量
+    // 查询语句：每次获取10条数据
+    const sql = `SELECT * FROM fishtool ORDER BY id DESC LIMIT ${pageSize} OFFSET ${offset}`;
+
+    // 查询总记录数
+    const countSql = "SELECT COUNT(*) as total FROM fishtool";
+
+    sqlConnect(sql, null, result => {
+        sqlConnect(countSql, null, countResult => {
+            const total = countResult[0].total;
+            const totalPages = Math.ceil(total / pageSize);
+
+            res.send({
+                status: 200,
+                data: result,
+                pagination: {
+                    currentPage: page,
+                    pageSize: pageSize,
+                    total: total,
+                    totalPages: totalPages
+                }
+            });
+        });
+    });
+});
+/**
+ * 后台管理系统 - 商品管理接口 - 搜索精选器械
+ */
+router.get("/backend/goods/fishtool/search", (req, res) => {
+    const search = url.parse(req.url, true).query.search;
+    const sql = `SELECT * FROM fishtool WHERE name LIKE '%${search}%'`;
+    sqlConnect(sql, null, result => {
+        if (result.length > 0) {
+            res.send({
+                status: 200,
+                data: result
+            });
+        } else {
+            res.send({
+                status: 500,
+                msg: '暂无数据'
+            });
+        }
+    })
+});
+/**
+ * 后台管理系统 - 商品管理接口 - 删除精选器械
+ */
+router.post("/backend/goods/fishtool/delete", (req, res) => {
+    const { id } = req.body;
+    const sql = `DELETE FROM fishtool WHERE id = ?`;
+    sqlConnect(sql, [id], result => {
+        if (result.affectedRows > 0) {
+            res.send({
+                status: 200,
+                msg: "删除成功"
+            });
+        } else {
+            res.send({
+                status: 500,
+                msg: "删除失败"
+            });
+        }
+    })
+})
+/**
+ * 后台管理系统 - 商品管理接口 - 修改精选器械
+ */
+router.post("/backend/goods/fishtool/update", (req, res) => {
+    const { id, name, price, image, introduce } = req.body;
+    const sql = `UPDATE fishtool SET name = ?, price = ?, image = ?, introduce = ? WHERE id = ?`;
+    const params = [name, price, image, introduce, id];
+    sqlConnect(sql, params, result => {
+        if (result.affectedRows > 0) {
+            res.send({
+                status: 200,
+                msg: "修改成功"
+            });
+        } else {
+            res.send({
+                status: 500,
+                msg: "修改失败"
+            });
+        }
+    })
+})
+
+/**
+ * 后台管理系统 - 订单管理接口 - 获取订单列表
+ */
+router.get("/backend/orders", (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+    const keyword = req.query.keyword || '';
+
+    const offset = (page - 1) * pageSize;
+
+    // 构建搜索条件
+    let searchCondition = '';
+    let searchParams = [];
+    if (keyword) {
+        searchCondition = `AND (order_number LIKE ? OR name LIKE ? OR phone LIKE ?)`;
+        searchParams = [`%${keyword}%`, `%${keyword}%`, `%${keyword}%`];
+    }
+
+    // 查询订单列表
+    const sql = `SELECT 
+                    id,
+                    order_number as orderNumber,
+                    name,
+                    phone,
+                    address,
+                    remark,
+                    items,
+                    total_amount as totalAmount,
+                    status,
+                    DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') as createTime
+                FROM orders 
+                WHERE 1=1
+                    ${searchCondition}
+                ORDER BY create_time DESC
+                LIMIT ?, ?`;
+
+    const params = [...searchParams, offset, pageSize];
+
+    // 查询总记录数
+    const countSql = `SELECT COUNT(*) as total FROM orders  WHERE 1=1 ${searchCondition}`;
+
+    sqlConnect(sql, params, result => {
+        sqlConnect(countSql, searchParams, countResult => {
+            const total = countResult[0].total;
+            res.send({
+                status: 200,
+                data: result,
+                pagination: {
+                    total,
+                    currentPage: page,
+                    pageSize
+                }
+            });
+        });
+    });
+});
+
+/**
+ * 后台管理系统 - 订单管理接口 - 更新订单状态
+ */
+router.post("/backend/orders/updateStatus", (req, res) => {
+    const { id, status } = req.body;
+    const sql = `UPDATE orders SET status = ?, update_time = CURRENT_TIMESTAMP WHERE id = ?`;
+    const params = [status, id];
+
+    sqlConnect(sql, params, result => {
+        if (result.affectedRows > 0) {
+            res.send({
+                status: 200,
+                msg: '订单状态更新成功'
+            });
+        } else {
+            res.send({
+                status: 500,
+                msg: '订单状态更新失败'
+            });
+        }
+    });
+});
+/**
+ * 后台管理系统 - 订单管理接口 - 删除订单
+ */
+router.post("/backend/orders/delete", (req, res) => {
+    const { id } = req.body;
+    const sql = `DELETE FROM orders WHERE id = ?`;
+    sqlConnect(sql, [id], result => {
+        if (result.affectedRows > 0) {
+            res.send({
+                status: 200,
+                msg: "删除成功"
+            });
+        } else {
+            res.send({
+                status: 500,
+                msg: "删除失败"
+            });
+        }
+    })
 })
 module.exports = router;// 导出路由实例

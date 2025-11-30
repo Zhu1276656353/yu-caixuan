@@ -2,15 +2,20 @@
     <div class="count">
         <div class="count-title">宠粉礼券·优惠多多</div>
         <div class="count-content">
-            <div class="card" v-for="(item, index) in discount.list" :key="index"  @click="handleCouponClick(item)">
+            <div class="card" v-for="(item, index) in discount.list" :key="index" @click="handleCouponClick(item)">
                 <div class="card-left">{{ item.discountedPrice }}</div>
                 <div class="card-right">
                     <p class="card-info">满{{ item.originalPrice }}元送{{ item.discountedPrice }}元优惠券</p>
-                    <button class="card-btn">点击领取</button>
+                    <button class="card-btn" alt="点击领取">
+                        <i>点</i>
+                        <i>击</i>
+                        <i>领</i>
+                        <i>取</i>
+                    </button>
                 </div>
             </div>
         </div>
-        <div class="count-end">本店满500元享88折扣/默认使用顺丰发货</div>
+        <div class="count-end">本店默认使用顺丰发货</div>
     </div>
 </template>
 <script setup>
@@ -55,9 +60,9 @@ const handleCouponClick = (coupon) => {
 .count {
     width: 100%;
     margin: 30px 0;
-    background-color: white;
+    background-color: rgba(255, 255, 255, 0.15);
     padding: 20px 0;
-    box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 
     .count-title {
         font-size: 30px;
@@ -81,8 +86,9 @@ const handleCouponClick = (coupon) => {
             display: flex;
             align-items: center;
             height: calc(100% - 20px);
-            background-image: linear-gradient(80deg, #dfdae9 0%, #f9eeca 100%);
-            border: 3px solid rgba(0, 0, 0, 0.2);
+            font-weight: bolder;
+            background: linear-gradient(90deg, #FFF8DC 30%, #F93B00 100%);
+            border: 1px solid #ddd;
             border-radius: 8px;
             mask-image: radial-gradient(circle at 88px 12px, transparent 12px, red 12.5px), radial-gradient(closest-side circle at 50%, red 99%, transparent 100%);
             mask-size: 100%, 7px 11px;
@@ -92,37 +98,8 @@ const handleCouponClick = (coupon) => {
             mask-composite: subtract;
             transition: 0.2s;
             cursor: pointer;
-
-            &::before,
-            &::after {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                transition: opacity 0.3s ease;
-            }
-
-            .card::before {
-                // background-image: linear-gradient(90deg, #fff1eb 0%, #ace0f9 100%);
-                background-image: linear-gradient(80deg, #dfdae9 0%, #f9eeca 100%);
-                z-index: -1;
-            }
-
-            &::after {
-                background-image: linear-gradient(-82deg, #dfdae9 50%, #f9eeca 100%);
-                z-index: -2;
-                opacity: 0;
-            }
-
-            &:hover::before {
-                opacity: 0;
-            }
-
-            &:hover::after {
-                opacity: 1;
-            }
+            position: relative;
+            z-index: 1;
 
             &:hover {
                 .card-btn {
@@ -130,8 +107,10 @@ const handleCouponClick = (coupon) => {
                 }
 
                 transform: perspective(1000px) translate3d(0, -5px, 10px);
+                transition: 0.2s;
             }
 
+            //卡片左侧
             .card-left {
                 width: 88px;
                 text-align: center;
@@ -143,6 +122,7 @@ const handleCouponClick = (coupon) => {
                 font-size: 10px;
             }
 
+            //卡片右侧
             .card-right {
                 padding: 16px 12px;
                 display: flex;
@@ -151,24 +131,89 @@ const handleCouponClick = (coupon) => {
             }
 
             .card-info {
+                box-sizing: border-box;
                 margin: 0;
                 font-size: 14px;
                 line-height: 20px;
                 color: rgba(33, 32, 44, 0.9);
-                margin-top: 20px;
+                padding-bottom: 15px;
             }
 
             .card-btn {
-                width: max-content;
-                margin: 0px auto;
-                margin-top: 16px;
-                box-sizing: border-box;
-                border: 5px solid rgba(255, 255, 255, 0.8);
-                border-radius: 15px;
-                background-image: linear-gradient(-225deg, #E3FDF5 0%, #FFE6FA 100%);
-                padding: 5px 10px;
-                font-size: 12px;
-                color: rgba(0, 0, 0, 0.6);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 30px;
+                position: relative;
+                padding: 0 20px;
+                font-size: 18px;
+                text-transform: uppercase;
+                border: 0;
+                box-shadow: #fbebae 0px 5px 0px 0px;
+                background-color: #FFF8DC;
+                border-radius: 12px;
+                overflow: hidden;
+                transition: 31ms cubic-bezier(.5, .7, .4, 1);
+                cursor: pointer;
+
+                &:before {
+                    content: attr(alt);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    position: absolute;
+                    inset: 0;
+                    font-size: 15px;
+                    font-weight: bold;
+                    color: #F93B00;
+                    letter-spacing: 4px;
+                    opacity: 1;
+                }
+
+                &:active {
+                    box-shadow: none;
+                    transform: translateY(7px);
+                    transition: 35ms cubic-bezier(.5, .7, .4, 1);
+                }
+
+                &:hover:before {
+                    transition: all .0s;
+                    transform: translateY(100%);
+                    opacity: 0;
+                }
+
+                i {
+                    color: #F93B00;
+                    font-size: 15px;
+                    font-weight: bold;
+                    letter-spacing: 4px;
+                    font-style: normal;
+                    transition: all 2s ease;
+                    transform: translateY(-20px);
+                    opacity: 0;
+                }
+
+                &:hover i {
+                    transition: all .2s ease;
+                    transform: translateY(0px);
+                    opacity: 1;
+                }
+
+                &:hover i:nth-child(1) {
+                    transition-delay: 0.045s;
+                }
+
+                &:hover i:nth-child(2) {
+                    transition-delay: calc(0.045s * 3);
+                }
+
+                &:hover i:nth-child(3) {
+                    transition-delay: calc(0.045s * 4);
+                }
+
+                &:hover i:nth-child(4) {
+                    transition-delay: calc(0.045s * 5);
+                }
             }
         }
 
@@ -185,207 +230,208 @@ const handleCouponClick = (coupon) => {
 
     }
 }
-// 超小设备响应式 (最大宽度 480px) - 手机竖屏
-@media screen and (max-width: 480px) {
-    .count {
-        margin: 20px 0;
-        padding: 15px 0;
 
-        .count-title {
-            font-size: 22px;
-            letter-spacing: 3px;
-            margin-bottom: 20px;
-        }
+// // 超小设备响应式 (最大宽度 480px) - 手机竖屏
+// @media screen and (max-width: 480px) {
+//     .count {
+//         margin: 20px 0;
+//         padding: 15px 0;
 
-        .count-content {
-            width: 95%;
-            height: auto;
-            flex-direction: column;
-            gap: 15px;
+//         .count-title {
+//             font-size: 22px;
+//             letter-spacing: 3px;
+//             margin-bottom: 20px;
+//         }
 
-            .card {
-                width: 100%;
-                height: 100px;
+//         .count-content {
+//             width: 95%;
+//             height: auto;
+//             flex-direction: column;
+//             gap: 15px;
 
-                .card-left {
-                    width: 70px;
-                    font-size: 24px;
-                }
+//             .card {
+//                 width: 100%;
+//                 height: 100px;
 
-                .card-right {
-                    padding: 10px 8px;
+//                 .card-left {
+//                     width: 70px;
+//                     font-size: 24px;
+//                 }
 
-                    .card-info {
-                        font-size: 12px;
-                        margin-top: 10px;
-                        margin-left: 100px;
-                        line-height: 16px;
-                    }
+//                 .card-right {
+//                     padding: 10px 8px;
 
-                    .card-btn {
-                        margin-top: 10px;
-                        padding: 4px 8px;
-                        font-size: 10px;
-                        border: 3px solid rgba(255, 255, 255, 0.8);
-                    }
-                }
-            }
-        }
+//                     .card-info {
+//                         font-size: 12px;
+//                         margin-top: 10px;
+//                         margin-left: 100px;
+//                         line-height: 16px;
+//                     }
 
-        .count-end {
-            font-size: 8px;
-            letter-spacing: 3px;
-            padding: 15px 0;
-        }
-    }
-}
+//                     .card-btn {
+//                         margin-top: 10px;
+//                         padding: 4px 8px;
+//                         font-size: 10px;
+//                         border: 3px solid rgba(255, 255, 255, 0.8);
+//                     }
+//                 }
+//             }
+//         }
 
-// 小型设备响应式 (481px - 767px) - 手机横屏
-@media screen and (min-width: 481px) and (max-width: 767px) {
-    .count {
-        margin: 25px 0;
-        padding: 18px 0;
+//         .count-end {
+//             font-size: 8px;
+//             letter-spacing: 3px;
+//             padding: 15px 0;
+//         }
+//     }
+// }
 
-        .count-title {
-            font-size: 26px;
-            letter-spacing: 4px;
-            margin-bottom: 25px;
-        }
+// // 小型设备响应式 (481px - 767px) - 手机横屏
+// @media screen and (min-width: 481px) and (max-width: 767px) {
+//     .count {
+//         margin: 25px 0;
+//         padding: 18px 0;
 
-        .count-content {
-            width: 90%;
-            height: 130px;
+//         .count-title {
+//             font-size: 26px;
+//             letter-spacing: 4px;
+//             margin-bottom: 25px;
+//         }
 
-            .card {
-                height: calc(100% - 15px);
+//         .count-content {
+//             width: 90%;
+//             height: 130px;
 
-                .card-left {
-                    width: 80px;
-                    font-size: 28px;
-                }
+//             .card {
+//                 height: calc(100% - 15px);
 
-                .card-right {
-                    padding: 12px 10px;
+//                 .card-left {
+//                     width: 80px;
+//                     font-size: 28px;
+//                 }
 
-                    .card-info {
-                        font-size: 13px;
-                        margin-top: 15px;
-                    }
+//                 .card-right {
+//                     padding: 12px 10px;
 
-                    .card-btn {
-                        margin-top: 12px;
-                        padding: 4px 8px;
-                        font-size: 11px;
-                    }
-                }
-            }
-        }
+//                     .card-info {
+//                         font-size: 13px;
+//                         margin-top: 15px;
+//                     }
 
-        .count-end {
-            font-size: 9px;
-            letter-spacing: 4px;
-            padding: 18px 0;
-        }
-    }
-}
+//                     .card-btn {
+//                         margin-top: 12px;
+//                         padding: 4px 8px;
+//                         font-size: 11px;
+//                     }
+//                 }
+//             }
+//         }
 
-// 平板设备响应式 (768px - 1024px) - 平板
-@media screen and (min-width: 768px) and (max-width: 1024px) {
-    .count {
-        margin: 28px 0;
-        padding: 19px 0;
+//         .count-end {
+//             font-size: 9px;
+//             letter-spacing: 4px;
+//             padding: 18px 0;
+//         }
+//     }
+// }
 
-        .count-title {
-            font-size: 28px;
-            letter-spacing: 4px;
-            margin-bottom: 28px;
-        }
+// // 平板设备响应式 (768px - 1024px) - 平板
+// @media screen and (min-width: 768px) and (max-width: 1024px) {
+//     .count {
+//         margin: 28px 0;
+//         padding: 19px 0;
 
-        .count-content {
-            width: 85%;
-            height: 140px;
+//         .count-title {
+//             font-size: 28px;
+//             letter-spacing: 4px;
+//             margin-bottom: 28px;
+//         }
 
-            .card {
-                height: calc(100% - 18px);
+//         .count-content {
+//             width: 85%;
+//             height: 140px;
 
-                .card-left {
-                    width: 85px;
-                    font-size: 29px;
-                }
+//             .card {
+//                 height: calc(100% - 18px);
 
-                .card-right {
-                    padding: 14px 11px;
+//                 .card-left {
+//                     width: 85px;
+//                     font-size: 29px;
+//                 }
 
-                    .card-info {
-                        font-size: 13px;
-                        margin-top: 18px;
-                    }
+//                 .card-right {
+//                     padding: 14px 11px;
 
-                    .card-btn {
-                        margin-top: 14px;
-                        padding: 5px 9px;
-                        font-size: 11px;
-                    }
-                }
-            }
-        }
+//                     .card-info {
+//                         font-size: 13px;
+//                         margin-top: 18px;
+//                     }
 
-        .count-end {
-            font-size: 9px;
-            letter-spacing: 4px;
-            padding: 19px 0;
-        }
-    }
-}
+//                     .card-btn {
+//                         margin-top: 14px;
+//                         padding: 5px 9px;
+//                         font-size: 11px;
+//                     }
+//                 }
+//             }
+//         }
 
-// 桌面设备响应式 (1024px及以上) - 桌面
-@media screen and (min-width: 1024px) and (max-width: 1440px) {
-    .count {
-        width: 100%;
-        margin: 30px 0;
-        padding: 20px 0;
+//         .count-end {
+//             font-size: 9px;
+//             letter-spacing: 4px;
+//             padding: 19px 0;
+//         }
+//     }
+// }
 
-        .count-title {
-            font-size: 30px;
-            letter-spacing: 5px;
-            margin-bottom: 30px;
-        }
+// // 桌面设备响应式 (1024px及以上) - 桌面
+// @media screen and (min-width: 1024px) and (max-width: 1440px) {
+//     .count {
+//         width: 100%;
+//         margin: 30px 0;
+//         padding: 20px 0;
 
-        .count-content {
-            width: 60%;
-            height: 150px;
-            margin-left: 100px;
-            .card {
-                height: calc(100% - 20px);
-                margin-right: 10px;
+//         .count-title {
+//             font-size: 30px;
+//             letter-spacing: 5px;
+//             margin-bottom: 30px;
+//         }
 
-                .card-left {
-                    width: 88px;
-                    font-size: 30px;
-                }
+//         .count-content {
+//             width: 60%;
+//             height: 150px;
+//             margin-left: 100px;
 
-                .card-right {
-                    padding: 16px 12px;
+//             .card {
+//                 height: calc(100% - 20px);
+//                 margin-right: 10px;
 
-                    .card-info {
-                        font-size: 14px;
-                        margin-top: 20px;
-                    }
+//                 .card-left {
+//                     width: 88px;
+//                     font-size: 30px;
+//                 }
 
-                    .card-btn {
-                        margin-top: 16px;
-                        padding: 5px 10px;
-                        font-size: 12px;
-                    }
-                }
-            }
-        }
+//                 .card-right {
+//                     padding: 16px 12px;
 
-        .count-end {
-            font-size: 10px;
-            letter-spacing: 5px;
-            padding: 20px 0;
-        }
-    }
-}
-</style>
+//                     .card-info {
+//                         font-size: 14px;
+//                         margin-top: 20px;
+//                     }
+
+//                     .card-btn {
+//                         margin-top: 16px;
+//                         padding: 5px 10px;
+//                         font-size: 12px;
+//                     }
+//                 }
+//             }
+//         }
+
+//         .count-end {
+//             font-size: 10px;
+//             letter-spacing: 5px;
+//             padding: 20px 0;
+//         }
+//     }
+// }</style>

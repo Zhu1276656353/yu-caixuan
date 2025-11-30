@@ -5,31 +5,22 @@
             <p class="newProducts-title-en">NewProducts</p>
         </div>
         <div class="newProducts-content">
-            <div class="newProducts-top" @click="toProductDetail(newProducts.firstProduct)"
-                v-if="newProducts.firstProduct">
-                <div class="newProducts-top-img">
-                    <img :src="'http://localhost:3000' + newProducts.firstProduct.image" alt="">
+            <div class="card" v-for="item in newProducts.otherProducts" :key="item.id" @click="toProductDetail(item)">
+                <div class="top-card">
+                    <img :src="'http://localhost:3000' + item.image" :alt="item.name" class="card-img">
                 </div>
-                <div class="newProducts-top-content">
-                    <p class="newProducts-top-content-title">{{ newProducts.firstProduct.name }}</p>
-                    <el-button round class="newProducts-btn"
-                        @click="handleAddCartClick(newProducts.firstProduct)">加入购物车</el-button>
-                </div>
-            </div>
-            <div class="newProducts-bottom">
-                <div class="newProducts-bottom-card" @click="toProductDetail(item)"
-                    v-for="item in newProducts.otherProducts" :key="item.id">
-                    <div class="newProducts-bottom-card-img">
-                        <img :src="'http://localhost:3000' + item.image" :alt="item.name"></img>
-                    </div>
-                    <div class="newProducts-bottom-card-content">
-                        <span class="newProducts-bottom-card-content-title">
-                            {{ item.name }}
-                            <span class="newProducts-bottom-card-content-price">￥<span>{{ item.price }}</span></span>
-                        </span>
-                        <el-button round @click.stop="handleAddCartClick(item)">加入购物车</el-button>
+                <div class="bottom-card">
+                    <div class="card-content">
+                        <div class="card-info">
+                            <span class="card-title">{{ item.name }}</span>
+                            <p class="card-price">￥<span>{{ item.price }}</span></p>
+                        </div>
+                        <el-button round class="card-btn" @click.stop="handleAddCartClick(item)">
+                            <span>加入购物车</span>
+                        </el-button>
                     </div>
                 </div>
+                <span class="card-badge"></span>
             </div>
         </div>
     </div>
@@ -48,15 +39,22 @@ const newProducts = reactive({
     otherProducts: []
 })
 onMounted(() => {
+    /**
+     * 后续代码修改，未使用到firstProduct，只使用otherProducts
+     */
     api.getNewProducts().then(res => {
-        newProducts.firstProduct = res.data.data.firstProduct
+        // newProducts.firstProduct = res.data.data.firstProduct
         newProducts.otherProducts = res.data.data.otherProducts
     })
 })
 //点击按钮加入购物车
 const handleAddCartClick = (item) => {
+    ElMessage({
+        message: `商品添加成功`,
+        type: 'success'
+    });
     cartStore.addItem({
-        id: `${item.cid}`,
+        id: `${item.id}`,
         name: item.name,
         price: item.price,
         image: item.image,
@@ -66,10 +64,9 @@ const handleAddCartClick = (item) => {
 // 跳转到商品详情页
 const toProductDetail = (item) => {
     router.push({
-        path: `/productDetails/${item.cid}`,
+        path: `/productDetails/${item.id}`,
         query: {
             id: item.id,
-            cid: item.cid,
             name: item.name,
             price: item.price,
             image: item.image,
@@ -81,8 +78,7 @@ const toProductDetail = (item) => {
 <style lang="scss" scoped>
 .newProducts {
     width: 100%;
-    background-color: white;
-    padding: 30px 0;
+    padding: 30px 0 50px 0;
 
     /**新品推荐标题 */
     .newProducts-title {
@@ -116,461 +112,235 @@ const toProductDetail = (item) => {
         }
     }
 
-    /**新品推荐内容 */
     .newProducts-content {
         width: 60%;
         margin: 30px auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 50px;
 
-        //顶部内容
-        .newProducts-top {
-            width: 100%;
-            height: 500px;
+        .card {
             position: relative;
-            top: 50px;
+            width: 30%;
+            height: 254px;
+            background-color: #fff;
+            border-radius: 20px;
+            overflow: hidden;
+            cursor: pointer;
+            box-sizing: border-box;
 
-            .newProducts-top-img {
-                width: 98%;
-                height: 90%;
+            &:nth-child(1),
+            &:nth-child(2) {
+                width: 45%;
+                height: 300px;
+
+                .card-btn {
+                    width: 80%;
+                }
+            }
+
+            // 添加角标样式
+            .card-badge {
                 position: absolute;
-                top: -10%;
-                left: 50%;
-                transform: translateX(-50%);
-                z-index: 2;
-                border-radius: 20px 20px 0 0;
                 overflow: hidden;
+                width: 120px;
+                height: 120px;
+                top: -10px;
+                left: -10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 3;
 
-                img {
+                &::before {
+                    content: '新品上市';
+                    position: absolute;
+                    width: 150%;
+                    height: 40px;
+                    background-image: linear-gradient(45deg, #ff6547 0%, #ffb144 51%, #ff7053 100%);
+                    transform: rotate(-45deg) translateY(-20px);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: #fff;
+                    font-weight: 600;
+                    letter-spacing: 0.1em;
+                    text-transform: uppercase;
+                    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.23);
+                }
+
+                &::after {
+                    content: '';
+                    position: absolute;
+                    width: 10px;
+                    bottom: 0;
+                    left: 0;
+                    height: 10px;
+                    z-index: -1;
+                    box-shadow: 140px -140px #cc3f47;
+                    background-image: linear-gradient(45deg, #FF512F 0%, #F09819 51%, #FF512F 100%);
+                }
+            }
+
+            // 卡片上半部分
+            .top-card {
+                border-top-left-radius: 20px;
+                border-top-right-radius: 20px;
+                height: 77.5%;
+                transition: height 0.3s ease;
+                background-color: #fff;
+
+                .card-img {
                     width: 100%;
                     height: 100%;
                     object-fit: cover;
-                    object-position: center;
-                    // 添加渐变遮罩
-                    -webkit-mask-image: linear-gradient(to bottom, black 90%, transparent 100%);
-                    mask-image: linear-gradient(to bottom, black 90%, transparent 100%);
                 }
             }
 
-            .newProducts-top-content {
-                width: 100%;
-                height: 60%;
-                background-image: linear-gradient(#ff8788 0%, #ffecd1 100%);
-                position: absolute;
-                bottom: 0;
-                z-index: 1;
-                border-radius: 0 0 20px 20px;
+            // 卡片下半部分
+            .bottom-card {
+                border-bottom-left-radius: 20px;
+                border-bottom-right-radius: 20px;
+                height: 22.5%;
+                transition: height 0.3s ease;
+                background: linear-gradient(135deg, #ff6f61 30%, #ff9e7d);
 
-                .newProducts-top-content-title {
-                    font-size: 20px;
-                    font-weight: bold;
-                    color: #333;
+                &::before {
+                    content: "";
                     position: absolute;
-                    bottom: 20%;
-                    left: 50%;
-                    transform: translateX(-50%);
-                }
-
-                .newProducts-btn {
-                    position: absolute;
-                    bottom: 5%;
-                    left: 50%;
-                    transform: translateX(-50%);
+                    background-color: transparent;
+                    bottom: 22.5%;
+                    height: 50px;
+                    width: 100%;
+                    transition: bottom 0.3s ease;
+                    border-bottom-left-radius: 20px;
+                    border-bottom-right-radius: 20px;
+                    box-shadow: 0 17px 0 0 #ff6f61;
                 }
             }
-        }
 
-        /**新品推荐底部 */
-        .newProducts-bottom {
-            width: 100%;
-            margin: 100px auto;
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 30px;
-            align-items: center;
+            // 下半卡片内容
+            .card-content {
+                padding-top: 6%;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                color: #fff;
 
-            .newProducts-bottom-card {
-                width: 30%;
-                height: 300px;
-                border: 1px solid rgb(255, 255, 255);
-                background-image: linear-gradient(#fddb92 70%, #d1fdff 100%);
-                border-radius: 20px;
-                overflow: hidden;
-                transition: 0.2s ease-in;
-
-                /**底部第一张和第二张图片宽度和图片高度不一致 */
-                &:nth-child(1),
-                &:nth-child(2) {
-                    width: 48%;
-                    height: 350px;
-                }
-
-                &:hover {
-                    transform: translate3d(0, -5px, 0);
-                    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.8);
-                }
-
-                .newProducts-bottom-card-img {
-                    width: 100%;
-                    height: 80%;
-
-                    img {
-                        width: 100%;
-                        height: 100%;
-                        object-fit: cover;
-                        object-position: center;
-                        // 添加渐变遮罩
-                        -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
-                        mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
-                    }
-                }
-
-                .newProducts-bottom-card-content {
-                    width: 100%;
-                    height: 20%;
+                .card-info {
                     display: flex;
+                    justify-content: space-between;
                     align-items: center;
-                    justify-content: space-around;
+                    width: 80%;
+                    padding: 0px 10px;
+                    margin-bottom: 10px;
 
-                    .newProducts-bottom-card-content-title {
-                        font-size: 20px;
-                        font-weight: bold;
-                    }
-
-                    .newProducts-bottom-card-content-price {
-                        font-weight: bold;
-                        font-size: 15px;
-
-                        span {
-                            font-size: 20px;
-                            color: red;
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-// 超小设备响应式 (最大宽度 480px)
-@media screen and (max-width: 480px) {
-    .newProducts {
-        padding: 15px 0;
-
-        .newProducts-title {
-            margin: 15px auto;
-            letter-spacing: 2px;
-            padding-bottom: 10px;
-
-            .newProducts-title-ch {
-                font-size: 20px;
-            }
-
-            .newProducts-title-en {
-                font-size: 10px;
-            }
-        }
-
-        .newProducts-content {
-            width: 95%;
-            margin: 20px auto;
-
-            .newProducts-top {
-                height: 350px;
-                top: 30px;
-
-                .newProducts-top-img {
-                    width: 95%;
-                    height: 85%;
-
-                    img {
-                        object-fit: cover;
-                    }
-                }
-
-                .newProducts-top-content {
-                    height: 50%;
-                    border-radius: 0 0 15px 15px;
-
-                    .newProducts-top-content-title {
-                        font-size: 16px;
-                        bottom: 25%;
-                    }
-
-                    :deep(.el-button) {
-                        padding: 8px 15px;
-                        font-size: 12px;
-                        bottom: 8%;
-                    }
-                }
-            }
-
-            .newProducts-bottom {
-                margin: 70px auto 20px;
-                gap: 15px;
-
-                .newProducts-bottom-card {
-                    width: 100%;
-                    height: 250px;
-
-                    &:nth-child(1),
-                    &:nth-child(2) {
-                        width: 100%;
-                        height: 250px;
-                    }
-
-                    .newProducts-bottom-card-img {
-                        height: 70%;
-                    }
-
-                    .newProducts-bottom-card-content {
-                        height: 30%;
-                        flex-direction: column;
-                        justify-content: center;
-                        gap: 5px;
-
-                        .newProducts-bottom-card-content-title {
-                            font-size: 16px;
-                            padding: 0 10px;
-                        }
-
-                        .newProducts-bottom-card-content-price {
-                            font-size: 12px;
-
-                            span {
-                                font-size: 16px;
-                            }
-                        }
-
-                        :deep(.el-button) {
-                            padding: 6px 12px;
-                            font-size: 12px;
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-// 小型设备响应式 (481px - 767px)
-@media screen and (min-width: 481px) and (max-width: 767px) {
-    .newProducts {
-        padding: 20px 0;
-
-        .newProducts-title {
-            margin: 20px auto;
-            letter-spacing: 3px;
-            padding-bottom: 15px;
-
-            .newProducts-title-ch {
-                font-size: 24px;
-            }
-
-            .newProducts-title-en {
-                font-size: 12px;
-            }
-        }
-
-        .newProducts-content {
-            width: 90%;
-            margin: 25px auto;
-
-            .newProducts-top {
-                height: 400px;
-                top: 35px;
-
-                .newProducts-top-img {
-                    width: 96%;
-                    height: 87%;
-                }
-
-                .newProducts-top-content {
-                    height: 55%;
-
-                    .newProducts-top-content-title {
+                    .card-title {
+                        font-weight: 700;
                         font-size: 18px;
-                        bottom: 25%;
                     }
 
-                    :deep(.el-button) {
-                        padding: 10px 20px;
+                    .card-price {
                         font-size: 14px;
-                    }
-                }
-            }
-
-            .newProducts-bottom {
-                margin: 80px auto 30px;
-                gap: 20px;
-
-                .newProducts-bottom-card {
-                    width: 48%;
-                    height: 270px;
-
-                    &:nth-child(1),
-                    &:nth-child(2) {
-                        width: 48%;
-                        height: 270px;
-                    }
-
-                    .newProducts-bottom-card-content {
-                        .newProducts-bottom-card-content-title {
-                            font-size: 18px;
-                        }
-
-                        .newProducts-bottom-card-content-price {
-                            font-size: 14px;
-
-                            span {
-                                font-size: 18px;
-                            }
-                        }
-
-                        :deep(.el-button) {
-                            padding: 8px 16px;
-                            font-size: 14px;
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-// 平板设备响应式 (768px - 1024px)
-@media screen and (min-width: 768px) and (max-width: 1024px) {
-    .newProducts {
-        padding: 25px 0;
-
-        .newProducts-title {
-            margin: 25px auto;
-            letter-spacing: 4px;
-            padding-bottom: 18px;
-
-            .newProducts-title-ch {
-                font-size: 28px;
-            }
-
-            .newProducts-title-en {
-                font-size: 14px;
-            }
-        }
-
-        .newProducts-content {
-            width: 85%;
-
-            .newProducts-top {
-                height: 450px;
-                top: 40px;
-
-                .newProducts-top-img {
-                    width: 97%;
-                    height: 88%;
-                }
-
-                .newProducts-top-content-title {
-                    font-size: 20px;
-                }
-
-                :deep(.el-button) {
-                    padding: 10px 22px;
-                    font-size: 15px;
-                }
-            }
-
-            .newProducts-bottom {
-                gap: 25px;
-                margin: 90px auto 40px;
-
-                .newProducts-bottom-card {
-                    width: 46%;
-                    height: 280px;
-
-                    &:nth-child(1),
-                    &:nth-child(2) {
-                        width: 46%;
-                        height: 300px;
-                    }
-
-                    .newProducts-bottom-card-content-title {
-                        font-size: 18px;
-                        padding-left: 10px;
-                    }
-
-                    .newProducts-bottom-card-content-price {
-                        font-size: 15px;
+                        white-space: nowrap;
 
                         span {
-                            font-size: 20px;
+                            font-weight: bolder;
+                            color: orangered;
+                            font-size: 22px;
+                            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
                         }
                     }
+                }
 
-                    :deep(.el-button) {
-                        padding: 10px 20px;
-                        font-size: 15px;
+                .card-btn {
+                    width: 60%;
+                    margin-top: 0.5%;
+                    font-size: 13px;
+                    text-decoration: none;
+                    color: #ff4500;
+                    background-color: #fff;
+                    border: solid 2px #fff;
+                    border-radius: 15px;
+                    padding: 3%;
+                    font-weight: bolder;
+                    position: relative;
+                    overflow: hidden;
+                    transition: all 0.3s ease-in-out;
+                    z-index: 1;
+
+                    &::after {
+                        content: " ";
+                        width: 0%;
+                        height: 100%;
+                        background: #ff4500;
+                        position: absolute;
+                        transition: all 0.4s ease-in-out;
+                        right: 0;
+                        top: 0;
+                        z-index: -1;
+                    }
+
+                    &:hover::after {
+                        right: auto;
+                        left: 0;
+                        width: 100%;
+                    }
+
+                    &:hover {
+                        color: #ff4500;
+                        background-color: #fff;
+                        transition: background-color 0.4s ease;
+                        border-color: #ff4500;
+
+                        span {
+                            color: #fff;
+                            animation: scaleUp 0.3s ease-in-out;
+                        }
                     }
                 }
             }
-        }
-    }
-}
 
-// 桌面设备响应式 (1024px及以上)
-@media screen and (min-width: 1024px) {
-    .newProducts-content {
-        width: 60%;
+            // 卡片hover样式
+            &:hover {
+                box-shadow: 2px 2px 2px rgba(255, 69, 0, 0.6);
+                border: 2px solid #ff4500;
 
-        .newProducts-top {
-            height: 500px;
-            top: 50px;
-
-            .newProducts-top-img {
-                width: 98%;
-                height: 90%;
-            }
-
-            .newProducts-top-content-title {
-                font-size: 22px;
-            }
-
-            :deep(.el-button) {
-                padding: 12px 30px;
-                font-size: 16px;
-            }
-        }
-
-        .newProducts-bottom {
-            margin: 100px auto 50px;
-            gap: 30px;
-
-            .newProducts-bottom-card {
-                width: 30%;
-                height: 300px;
-
-                &:nth-child(1),
-                &:nth-child(2) {
-                    width: 48%;
-                    height: 350px;
+                .top-card {
+                    height: 60%;
+                    transition: height 0.3s ease;
                 }
 
-                .newProducts-bottom-card-content-title {
-                    font-size: 20px;
-                }
+                .bottom-card {
+                    height: 40%;
+                    transition: height 0.3s ease;
 
-                .newProducts-bottom-card-content-price {
-                    font-size: 15px;
-
-                    span {
-                        font-size: 20px;
+                    &::before {
+                        bottom: 40%;
+                        transition: bottom 0.3s ease;
                     }
                 }
+            }
 
-                :deep(.el-button) {
-                    padding: 12px 30px;
-                    font-size: 16px;
+            @keyframes scaleUp {
+                0% {
+                    transform: scale(1);
+                }
+
+                50% {
+                    transform: scale(0.95);
+                }
+
+                100% {
+                    transform: scale(1);
                 }
             }
         }
+
+
     }
 }
 </style>

@@ -6,16 +6,25 @@
                 <p class="hotProducts-title-en">HotProducts</p>
             </div>
             <div class="hotProducts-content">
-                <div class="hotProducts-card" @click="toProductDetail(item)" v-for="item in hotProducts.list"
-                    :key="item.id">
-                    <div class="hotProducts-card-img">
-                        <img :src="'http://localhost:3000' + item.image" :alt="item.name">
-                    </div>
-                    <div class="hotProducts-card-text">
-                        <div class="hotProducts-card-name">{{ item.name }}</div>
-                        <div class="hotProducts-card-price">￥<span>{{ item.price }}</span></div>
-                        <div class="hotProducts-card-sales">已售:<span>{{ item.sales }}</span></div>
-                        <button class="hotProducts-card-btn" @click.stop="handleAddCartClick(item)">加入购物车</button>
+                <!-- 热销卡片布局 -->
+                <div class="parent" v-for="item in hotProducts.list" :key="item.id" @click="toProductDetail(item)">
+                    <div class="card">
+                        <!-- 卡片内容 -->
+                        <div class="content-box">
+                            <!-- 图片 -->
+                            <div class="card-image">
+                                <img :src="'http://localhost:3000' + item.image" :alt="item.name">
+                            </div>
+                            <!-- 标题和价格 -->
+                            <div class="title-price-row">
+                                <span class="card-title">{{ item.name }}</span>
+                            </div>
+                            <span class="add-card" @click.stop="handleAddCartClick(item)">加入购物车</span>
+                        </div>
+                        <div class="price-box">
+                            <span class="price-font">价格</span>
+                            <span class="price-number">{{ item.price }}</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -36,12 +45,16 @@ const hotProducts = reactive({
 onMounted(() => {
     // 获取热销商品数据
     api.getHotProducts().then((res) => {
-        hotProducts.list = res.data.data;
+        hotProducts.list = [...res.data.data.freshwaterfish, ...res.data.data.saltwaterfish];
     });
 });
 const handleAddCartClick = (item) => {
+    ElMessage({
+        message: `商品添加成功`,
+        type: 'success'
+    });
     cartStore.addItem({
-        id: `${item.cid}`,
+        id: `${item.id}`,
         name: item.name,
         price: item.price,
         image: item.image,
@@ -51,10 +64,9 @@ const handleAddCartClick = (item) => {
 // 跳转到商品详情页
 const toProductDetail = (item) => {
     router.push({
-        path: `/productDetails/${item.cid}`,
+        path: `/productDetails/${item.id}`,
         query: {
             id: item.id,
-            cid: item.cid,
             name: item.name,
             price: item.price,
             image: item.image,
@@ -68,7 +80,8 @@ const toProductDetail = (item) => {
 .hotProducts {
     width: 100%;
     margin: 30px auto;
-    background-color: white;
+    background-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
     padding: 20px 0;
 
     .hotProducts-container {
@@ -108,7 +121,6 @@ const toProductDetail = (item) => {
         }
     }
 
-    /**热销推荐标题 */
     .hotProducts-content {
         display: flex;
         justify-content: space-between;
@@ -117,231 +129,136 @@ const toProductDetail = (item) => {
         gap: 30px;
         margin: 0px auto;
 
-        .hotProducts-card {
-            width: 28%;
-            height: 320px;
-            background-image: linear-gradient(#fff1eb 55%, #ace0f9 100%);
-            border-radius: 15px;
-            overflow: hidden;
-            box-sizing: border-box;
+        // 热销卡片
+        .parent {
+            width: 300px;
+            perspective: 1000px;
             cursor: pointer;
-            transition: 0.2s;
 
-            .hotProducts-card-img {
+            .card {
+                padding-top: 50px;
+                border: 3px solid rgb(255, 255, 255);
+                transform-style: preserve-3d;
+                background:
+                    linear-gradient(135deg, #0000 18.75%, #f3f3f3 0 31.25%, #0000 0),
+                    repeating-linear-gradient(45deg, #f3f3f3 -6.25% 6.25%, #ffffff 0 18.75%);
+                background-size: 60px 60px;
+                background-position: 0 0, 0 0;
+                background-color: #f0f0f0;
                 width: 100%;
-                height: 200px;
+                box-shadow: rgba(142, 142, 142, 0.5) 0px 30px 30px -10px;
+                transition: all 0.5s ease-in-out;
 
-                img {
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover;
-                    object-position: center;
-                    // 添加渐变遮罩
-                    -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
-                    mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
-                }
-            }
-
-            .hotProducts-card-text {
-                padding: 0 20px;
-
-                .hotProducts-card-name {
-                    width: 100%;
-                    font-size: 26px;
-                    font-weight: bold;
+                &:hover {
+                    background-position: -100px 100px, -100px 100px;
+                    transform: rotate3d(0.5, 1, 0, 30deg);
                 }
 
-                .hotProducts-card-price {
-                    font-size: 15px;
-                    font-weight: bold;
-                    float: left;
+                .content-box {
+                    background: linear-gradient(135deg, #ff6b35 30%, #ff9e6d);
+                    transition: all 0.5s ease-in-out;
+                    padding: 60px 25px 25px 25px;
+                    transform-style: preserve-3d;
 
-                    span {
-                        font-size: 18px;
-                        color: red;
+                    .card-image {
+                        width: 100%;
+                        height: 150px;
+                        margin-bottom: 15px;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+
+                        img {
+                            max-width: 100%;
+                            max-height: 100%;
+                            object-fit: cover;
+                            border-radius: 5px;
+                        }
+                    }
+
+                    .title-price-row {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        width: 100%;
+                        margin-bottom: 10px;
+                    }
+
+                    .card-title {
+                        display: inline-block;
+                        color: white;
+                        font-size: 25px;
+                        font-weight: 900;
+                        transition: all 0.5s ease-in-out;
+                        transform: translate3d(0px, 0px, 50px);
+
+                        &:hover {
+                            transform: translate3d(0px, 0px, 60px);
+                        }
+                    }
+
+                    .card-content {
+                        margin-top: 10px;
+                        font-size: 12px;
+                        font-weight: 700;
+                        color: #f2f2f2;
+                        transition: all 0.5s ease-in-out;
+                        transform: translate3d(0px, 0px, 30px);
+
+                        &:hover {
+                            transform: translate3d(0px, 0px, 60px);
+                        }
+                    }
+
+                    .add-card {
+                        cursor: pointer;
+                        margin-top: 1rem;
+                        display: inline-block;
+                        font-weight: 900;
+                        font-size: 12px;
+                        text-transform: uppercase;
+                        // color: rgb(7, 185, 255);
+                        color: orangered;
+                        background: white;
+                        padding: 0.5rem 0.7rem;
+                        transition: all 0.5s ease-in-out;
+                        transform: translate3d(0px, 0px, 20px);
+
+                        &:hover {
+                            transform: translate3d(0px, 0px, 60px);
+                        }
                     }
                 }
 
-                .hotProducts-card-sales {
-                    float: right;
-                    font-size: 15px;
+                .price-box {
+                    position: absolute;
+                    top: 30px;
+                    right: 30px;
+                    height: 60px;
+                    width: 60px;
+                    background: white;
+                    // border: 1px solid rgb(7, 185, 255);
+                    border: 1px solid #ff6b35;
+                    padding: 10px;
+                    transform: translate3d(0px, 0px, 80px);
+                    box-shadow: rgba(100, 100, 111, 0.2) 0px 17px 10px -10px;
 
                     span {
-                        color: red;
+                        display: block;
+                        text-align: center;
                     }
-                }
 
-                // 添加购物车按钮
-                .hotProducts-card-btn {
-                    width: 100%;
-                    box-sizing: border-box;
-                    cursor: pointer;
-                    border: 1px solid rgba(0, 0, 0, 0.5);
-                    margin: 10px auto;
-                    border-radius: 10px;
-                    padding: 10px 10px;
-                    font-size: 12px;
-                    color: rgba(0, 0, 0, 0.8);
-                    font-weight: bold;
-                    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
-                    transition: 0.2s ease-in;
-                }
-
-                .hotProducts-card-btn:hover {
-                    box-shadow:
-                        5px 5px 5px rgba(0, 0, 0, 0.2),
-                        inset 5px 5px 5px rgba(0, 0, 0, 0.5);
-                }
-            }
-        }
-
-        .hotProducts-card:hover {
-            transform: translate3d(0, -5px, 0);
-            box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.8);
-        }
-    }
-}
-
-// 平板设备响应式 (768px - 1024px)
-@media screen and (max-width: 1024px) {
-    .hotProducts {
-        .hotProducts-container {
-            width: 95%;
-        }
-
-        .hotProducts-content {
-            .hotProducts-card {
-                width: calc(33.33% - 20px);
-                height: 300px;
-
-                .hotProducts-card-name {
-                    font-size: 22px;
-                }
-
-                .hotProducts-card-img {
-                    height: 170px;
-                }
-            }
-        }
-    }
-}
-
-// 小型设备响应式 (481px - 767px)
-@media screen and (max-width: 767px) {
-    .hotProducts {
-        padding: 10px 0;
-        margin: 20px auto;
-
-        .hotProducts-container {
-            width: 95%;
-            margin: 20px auto;
-        }
-
-        .hotProducts-title {
-            margin: 20px auto;
-            letter-spacing: 3px;
-            padding-bottom: 15px;
-
-            .hotProducts-title-ch {
-                font-size: 24px;
-            }
-
-            .hotProducts-title-en {
-                font-size: 12px;
-            }
-        }
-
-        .hotProducts-content {
-            gap: 20px;
-
-            .hotProducts-card {
-                width: calc(50% - 10px);
-                height: 280px;
-
-                .hotProducts-card-name {
-                    font-size: 20px;
-                }
-
-                .hotProducts-card-price {
-                    font-size: 13px;
-
-                    span {
-                        font-size: 16px;
+                    .price-font {
+                        color: orangered;
+                        font-size: 9px;
+                        font-weight: 700;
                     }
-                }
 
-                .hotProducts-card-sales {
-                    font-size: 13px;
-                }
-
-                .hotProducts-card-img {
-                    height: 150px;
-                }
-
-                .hotProducts-card-btn {
-                    padding: 8px 5px;
-                    font-size: 11px;
-                }
-            }
-        }
-    }
-}
-
-// 超小设备响应式 (最大宽度 480px)
-@media screen and (max-width: 480px) {
-    .hotProducts {
-        margin: 15px auto;
-        padding: 10px 0;
-
-        .hotProducts-container {
-            width: 95%;
-            margin: 15px auto;
-        }
-
-        .hotProducts-title {
-            margin: 15px auto;
-            letter-spacing: 2px;
-            padding-bottom: 10px;
-
-            .hotProducts-title-ch {
-                font-size: 20px;
-            }
-
-            .hotProducts-title-en {
-                font-size: 10px;
-            }
-        }
-
-        .hotProducts-content {
-            gap: 15px;
-
-            .hotProducts-card {
-                width: 100%;
-                height: 300px;
-
-                .hotProducts-card-name {
-                    font-size: 22px;
-                }
-
-                .hotProducts-card-price {
-                    font-size: 14px;
-
-                    span {
-                        font-size: 18px;
+                    .price-number {
+                        font-size: 20px;
+                        font-weight: 900;
+                        color: orangered;
                     }
-                }
-
-                .hotProducts-card-sales {
-                    font-size: 14px;
-                }
-
-                .hotProducts-card-img {
-                    height: 170px;
-                }
-
-                .hotProducts-card-btn {
-                    padding: 10px 5px;
-                    font-size: 12px;
                 }
             }
         }

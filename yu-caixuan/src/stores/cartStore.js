@@ -10,6 +10,7 @@ export const useCartStore = defineStore("cartStore", () => {
     const activeCouponId = ref(null);
 
     // 计算购物车商品总数量
+    //reduce 函数会遍历 cartItems 数组中的每一项，将每项的 quantity 值相加，最终得到购物车内所有商品的总数量
     const totalQuantity = computed(() => {
         return cartItems.value.reduce((total, item) => {
             return total + item.quantity;
@@ -29,6 +30,7 @@ export const useCartStore = defineStore("cartStore", () => {
 
         // 如果有激活的优惠券且满足使用条件，则应用折扣
         if (activeCouponId.value) {
+            // find 方法用于在 coupons 数组中查找与 activeCouponId 匹配的优惠券对象
             const activeCoupon = coupons.value.find(coupon => coupon.id === activeCouponId.value);
             if (activeCoupon && total >= activeCoupon.originalPrice) {
                 total -= activeCoupon.discountedPrice;
@@ -65,6 +67,7 @@ export const useCartStore = defineStore("cartStore", () => {
 
     // 添加商品到购物车
     const addItem = (item) => {
+        // 使用 find 方法在 cartItems 数组中查找是否已存在相同 ID 的商品
         const existingItem = cartItems.value.find(cartItem => cartItem.id === item.id);
         if (existingItem) {
             existingItem.quantity += item.quantity || 1;

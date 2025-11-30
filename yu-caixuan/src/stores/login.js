@@ -4,6 +4,7 @@ export const useLoginStore = defineStore("login", {
         token: "",
         username: "",
         password: "",
+        permission: ""
     }),
     persist: {
         enabled: true,

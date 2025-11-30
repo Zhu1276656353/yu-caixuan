@@ -20,7 +20,7 @@
                 </div>
             </el-button>
         </div>
-        <el-drawer v-model="drawer" title="购物车" :direction="direction" size="40%">
+        <el-drawer class="el-drawer" v-model="drawer" title="购物车" :direction="direction" size="40%">
             <div class="cart-drawer-content">
                 <!-- 购物车列表 -->
                 <div class="cart-items" v-if="cartStore.cartItems.length > 0">
@@ -80,7 +80,7 @@
                     </div>
                     <div class="cart-actions">
                         <el-button type="danger" size="large" @click="clearCartHandler">清空购物车</el-button>
-                        <el-button type="primary" size="large">去结算</el-button>
+                        <el-button type="primary" size="large" @click="checkoutHandler">去结算</el-button>
                     </div>
                 </div>
             </div>
@@ -91,12 +91,13 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useCartStore } from '@/stores/cartStore.js'
-
+import { useRouter } from 'vue-router'
+const router = useRouter();
 // 购物车抽屉组件
 const drawer = ref(false)
 const direction = ref('rtl');
 // 使用购物车 store
-const cartStore = useCartStore(); 
+const cartStore = useCartStore();
 
 // 当前激活的优惠券ID
 const activeCouponId = computed({
@@ -118,8 +119,14 @@ const clearActiveCoupon = () => {
 const clearCartHandler = () => {
     cartStore.clearCart();
 };
-
-
+/**
+ * 去结算商品
+ */
+const checkoutGoods = ref([]);
+const checkoutHandler = () => {
+    checkoutGoods.value = [...cartStore.cartItems];
+    router.push("/checkout")
+};
 /**
  * 回到顶部开始
  */
@@ -165,7 +172,8 @@ onBeforeUnmount(() => {
 
         //回到顶部样式
         &:nth-child(2) {
-            bottom: 31.5px;
+            // bottom: 31.5px;
+            bottom: 30px;
             border-radius: 20px;
 
             p {
@@ -193,6 +201,21 @@ onBeforeUnmount(() => {
     }
 }
 
+
+// 使用深度选择器修改抽屉背景
+:deep(.el-drawer) {
+    // background-color: #ffffff;
+    // background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1346' height='224.3' viewBox='0 0 600 100'%3E%3Cg stroke='%23FFF' stroke-width='0' stroke-miterlimit='10' %3E%3Ccircle fill='%23037B79' cx='0' cy='0' r='50'/%3E%3Ccircle fill='%2392DEBA' cx='100' cy='0' r='50'/%3E%3Ccircle fill='%23FFFFD8' cx='200' cy='0' r='50'/%3E%3Ccircle fill='%23CAF2FF' cx='300' cy='0' r='50'/%3E%3Ccircle fill='%236FCCFF' cx='400' cy='0' r='50'/%3E%3Ccircle fill='%23006EB4' cx='500' cy='0' r='50'/%3E%3Ccircle fill='%23037B79' cx='600' cy='0' r='50'/%3E%3Ccircle cx='-50' cy='50' r='50'/%3E%3Ccircle fill='%2353ac9a' cx='50' cy='50' r='50'/%3E%3Ccircle fill='%23ceefc1' cx='150' cy='50' r='50'/%3E%3Ccircle fill='%23ffffff' cx='250' cy='50' r='50'/%3E%3Ccircle fill='%239de0fe' cx='350' cy='50' r='50'/%3E%3Ccircle fill='%233e9cda' cx='450' cy='50' r='50'/%3E%3Ccircle fill='%2300789c' cx='550' cy='50' r='50'/%3E%3Ccircle cx='650' cy='50' r='50'/%3E%3Ccircle fill='%23037B79' cx='0' cy='100' r='50'/%3E%3Ccircle fill='%2392DEBA' cx='100' cy='100' r='50'/%3E%3Ccircle fill='%23FFFFD8' cx='200' cy='100' r='50'/%3E%3Ccircle fill='%23CAF2FF' cx='300' cy='100' r='50'/%3E%3Ccircle fill='%236FCCFF' cx='400' cy='100' r='50'/%3E%3Ccircle fill='%23006EB4' cx='500' cy='100' r='50'/%3E%3Ccircle fill='%23037B79' cx='600' cy='100' r='50'/%3E%3Ccircle cx='50' cy='150' r='50'/%3E%3Ccircle cx='150' cy='150' r='50'/%3E%3Ccircle cx='250' cy='150' r='50'/%3E%3Ccircle cx='350' cy='150' r='50'/%3E%3Ccircle cx='450' cy='150' r='50'/%3E%3Ccircle cx='550' cy='150' r='50'/%3E%3C/g%3E%3C/svg%3E");
+
+    background-color: #A0FEFF;
+background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25' viewBox='0 0 1600 800'%3E%3Cg %3E%3Cpolygon fill='%23b3fef4' points='1600 160 0 460 0 350 1600 50'/%3E%3Cpolygon fill='%23c6fee9' points='1600 260 0 560 0 450 1600 150'/%3E%3Cpolygon fill='%23d9fedd' points='1600 360 0 660 0 550 1600 250'/%3E%3Cpolygon fill='%23ecfed2' points='1600 460 0 760 0 650 1600 350'/%3E%3Cpolygon fill='%23FFFEC7' points='1600 800 0 800 0 750 1600 450'/%3E%3C/g%3E%3C/svg%3E");
+background-attachment: fixed;
+background-size: cover;
+    // 同时修改抽屉内容区域的背景
+    // .el-drawer__body {
+    //     background-color: transparent;
+    // }
+}
 
 //商品信息
 .cart-drawer-content {

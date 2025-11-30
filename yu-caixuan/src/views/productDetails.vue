@@ -49,7 +49,6 @@ const cartStore = useCartStore()
 // 商品数据
 const productData = ref({
   id: '',
-  cid: '',
   name: '',
   price: '',
   image: ''
@@ -58,7 +57,7 @@ const productData = ref({
 const handleAddCartClick = () => {
   if (productData.value) {
     cartStore.addItem({
-      id: productData.value.cid,
+      id: productData.value.id,
       name: productData.value.name,
       price: productData.value.price,
       image: productData.value.image,
@@ -80,7 +79,6 @@ const goBack = () => {
 const updateProductData = () => {
   // 从路由参数中获取数据
   const productId = route.params.id;  // 从路径参数获取商品ID
-  const cid = route.query.cid;
   const name = route.query.name;
   const price = route.query.price;
   const image = route.query.image;
@@ -89,8 +87,7 @@ const updateProductData = () => {
   // 如果有查询参数，直接使用查询参数中的数据
   if (name) {
     productData.value = {
-      id: productId || '',
-      cid: cid || '',
+      id: productId || '',  // 改为使用路径参数中的 productId
       name: name || '',
       price: price || '',
       image: image || '',
@@ -118,21 +115,22 @@ onMounted(() => {
   margin: 0 auto;
   padding: 20px;
   font-family: Arial, sans-serif;
-  margin-bottom: 20vh;
+  margin-bottom: 24vh;
 }
 
 .breadcrumb {
   margin-bottom: 20px;
   color: #999;
   font-size: 14px;
+  font-weight: bold;
 
   span {
     cursor: pointer;
-    color: #409eff;
+    color: #ff6b35
   }
 
   span:last-child {
-    color: #333;
+    color: rgba(0, 0, 0, 0.6);
     cursor: default;
   }
 }
