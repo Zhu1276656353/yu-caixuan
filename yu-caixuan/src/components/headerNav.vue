@@ -76,9 +76,9 @@ const managementHandler = () => {
 /**
  * 查看订单: 跳转到用户订单页面
  */
-const orderHandler = () => {
-    router.push('/user/orders');
-}
+// const orderHandler = () => {
+//     router.push('/user/orders');
+// }
 </script>
 <style lang="scss" scoped>
 .header {
