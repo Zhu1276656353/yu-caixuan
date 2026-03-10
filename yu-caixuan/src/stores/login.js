@@ -4,7 +4,11 @@ export const useLoginStore = defineStore("login", {
         token: "",
         username: "",
         password: "",
-        permission: ""
+        permission: "",
+        // token 过期时间（毫秒时间戳）
+        expiresAt: null,
+        // 登录状态标记
+        isLogin: false
     }),
     persist: {
         enabled: true,

@@ -156,19 +156,28 @@ router.post("/login", (req, res) => {
             /**
              * 生成 token：用于前后端登录状态验证
              * token 中包含用户的基本信息（id、username、permission）
+             * 设置 token 有效期为 7 天
              */
+            const expiresInSeconds = 7 * 24 * 60 * 60; // 7 天的秒数
             const token = jsonwebtoken.sign({
                 id: result[0].id,
                 username: result[0].username,
                 permission: result[0].permission
-            }, jsonwebtokenSecret.secret); // 使用密钥加密生成 token
+            }, jsonwebtokenSecret.secret, {
+                expiresIn: expiresInSeconds
+            }); // 使用密钥加密生成带过期时间的 token
 
-            // 登录成功，返回用户信息和 token
+            // 计算过期时间的时间戳（毫秒）
+            const expiresAt = Date.now() + expiresInSeconds * 1000;
+
+            // 登录成功，返回用户信息、token 以及有效期信息
             res.send({
                 status: 200,
                 username: result[0].username,
                 permission: result[0].permission,
-                token
+                token,
+                expiresIn: expiresInSeconds,
+                expiresAt
             });
         } else {
             // 用户名或密码错误，返回错误信息

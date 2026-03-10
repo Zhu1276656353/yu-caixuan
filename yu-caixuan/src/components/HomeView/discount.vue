@@ -225,213 +225,243 @@ const handleCouponClick = (coupon) => {
         letter-spacing: 5px;
         font-weight: bold;
         color: rgba(0, 0, 0, 0.5);
-        text-align: center;
         padding: 20px 0;
-
     }
 }
 
-// // 超小设备响应式 (最大宽度 480px) - 手机竖屏
-// @media screen and (max-width: 480px) {
-//     .count {
-//         margin: 20px 0;
-//         padding: 15px 0;
+/* 响应式：平板横屏 */
+@media (max-width: 1200px) {
+    .count {
+        .count-content {
+            width: 80%;
+        }
 
-//         .count-title {
-//             font-size: 22px;
-//             letter-spacing: 3px;
-//             margin-bottom: 20px;
-//         }
+        .count-title {
+            font-size: 26px;
+            letter-spacing: 4px;
+        }
+    }
+}
 
-//         .count-content {
-//             width: 95%;
-//             height: auto;
-//             flex-direction: column;
-//             gap: 15px;
+/* 响应式：平板竖屏 */
+@media (max-width: 992px) {
+    .count {
+        margin: 25px 0;
+        padding: 18px 0;
 
-//             .card {
-//                 width: 100%;
-//                 height: 100px;
+        .count-title {
+            font-size: 24px;
+            letter-spacing: 3px;
+            margin-bottom: 25px;
+        }
 
-//                 .card-left {
-//                     width: 70px;
-//                     font-size: 24px;
-//                 }
+        .count-content {
+            width: 90%;
+            height: 140px;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
 
-//                 .card-right {
-//                     padding: 10px 8px;
+            .card {
+                flex: 1 1 calc(50% - 15px);
+                min-width: 280px;
+                height: 130px;
+                mask-image: radial-gradient(circle at 70px 12px, transparent 12px, red 12.5px), radial-gradient(closest-side circle at 50%, red 99%, transparent 100%);
+                mask-position: 0 -12px, 66.5px;
 
-//                     .card-info {
-//                         font-size: 12px;
-//                         margin-top: 10px;
-//                         margin-left: 100px;
-//                         line-height: 16px;
-//                     }
+                .card-left {
+                    width: 70px;
+                    font-size: 26px;
+                }
 
-//                     .card-btn {
-//                         margin-top: 10px;
-//                         padding: 4px 8px;
-//                         font-size: 10px;
-//                         border: 3px solid rgba(255, 255, 255, 0.8);
-//                     }
-//                 }
-//             }
-//         }
+                .card-right {
+                    padding: 12px 10px;
+                }
 
-//         .count-end {
-//             font-size: 8px;
-//             letter-spacing: 3px;
-//             padding: 15px 0;
-//         }
-//     }
-// }
+                .card-info {
+                    font-size: 13px;
+                    line-height: 18px;
+                    padding-bottom: 10px;
+                }
 
-// // 小型设备响应式 (481px - 767px) - 手机横屏
-// @media screen and (min-width: 481px) and (max-width: 767px) {
-//     .count {
-//         margin: 25px 0;
-//         padding: 18px 0;
+                .card-btn {
+                    height: 26px;
+                    padding: 0 16px;
+                    font-size: 14px;
 
-//         .count-title {
-//             font-size: 26px;
-//             letter-spacing: 4px;
-//             margin-bottom: 25px;
-//         }
+                    &:before {
+                        font-size: 13px;
+                        letter-spacing: 3px;
+                    }
 
-//         .count-content {
-//             width: 90%;
-//             height: 130px;
+                    i {
+                        font-size: 13px;
+                        letter-spacing: 3px;
+                    }
+                }
+            }
+        }
 
-//             .card {
-//                 height: calc(100% - 15px);
+        .count-end {
+            font-size: 9px;
+            letter-spacing: 4px;
+            padding: 18px 0;
+        }
+    }
+}
 
-//                 .card-left {
-//                     width: 80px;
-//                     font-size: 28px;
-//                 }
+/* 响应式：手机横屏 / 小屏 */
+@media (max-width: 768px) {
+    .count {
+        margin: 20px 0;
+        padding: 15px 0;
 
-//                 .card-right {
-//                     padding: 12px 10px;
+        .count-title {
+            font-size: 22px;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
 
-//                     .card-info {
-//                         font-size: 13px;
-//                         margin-top: 15px;
-//                     }
+        .count-content {
+            width: 95%;
+            height: auto;
+            flex-direction: column;
+            gap: 15px;
+            align-items: stretch;
 
-//                     .card-btn {
-//                         margin-top: 12px;
-//                         padding: 4px 8px;
-//                         font-size: 11px;
-//                     }
-//                 }
-//             }
-//         }
+            .card {
+                flex: none;
+                width: 100%;
+                min-width: unset;
+                height: 110px;
+                mask-image: radial-gradient(circle at 60px 12px, transparent 12px, red 12.5px), radial-gradient(closest-side circle at 50%, red 99%, transparent 100%);
+                mask-position: 0 -12px, 56.5px;
 
-//         .count-end {
-//             font-size: 9px;
-//             letter-spacing: 4px;
-//             padding: 18px 0;
-//         }
-//     }
-// }
+                .card-left {
+                    width: 60px;
+                    font-size: 22px;
+                }
 
-// // 平板设备响应式 (768px - 1024px) - 平板
-// @media screen and (min-width: 768px) and (max-width: 1024px) {
-//     .count {
-//         margin: 28px 0;
-//         padding: 19px 0;
+                .card-right {
+                    padding: 10px 8px;
+                }
 
-//         .count-title {
-//             font-size: 28px;
-//             letter-spacing: 4px;
-//             margin-bottom: 28px;
-//         }
+                .card-info {
+                    font-size: 12px;
+                    line-height: 16px;
+                    padding-bottom: 8px;
+                }
 
-//         .count-content {
-//             width: 85%;
-//             height: 140px;
+                .card-btn {
+                    height: 24px;
+                    padding: 0 12px;
+                    font-size: 12px;
 
-//             .card {
-//                 height: calc(100% - 18px);
+                    &:before {
+                        font-size: 12px;
+                        letter-spacing: 2px;
+                    }
 
-//                 .card-left {
-//                     width: 85px;
-//                     font-size: 29px;
-//                 }
+                    i {
+                        font-size: 12px;
+                        letter-spacing: 2px;
+                    }
+                }
+            }
+        }
 
-//                 .card-right {
-//                     padding: 14px 11px;
+        .count-end {
+            font-size: 8px;
+            letter-spacing: 3px;
+            padding: 15px 0;
+        }
+    }
+}
 
-//                     .card-info {
-//                         font-size: 13px;
-//                         margin-top: 18px;
-//                     }
+/* 响应式：手机竖屏 */
+@media (max-width: 576px) {
+    .count {
+        margin: 15px 0;
+        padding: 15px 10px;
 
-//                     .card-btn {
-//                         margin-top: 14px;
-//                         padding: 5px 9px;
-//                         font-size: 11px;
-//                     }
-//                 }
-//             }
-//         }
+        .count-title {
+            font-size: 20px;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
 
-//         .count-end {
-//             font-size: 9px;
-//             letter-spacing: 4px;
-//             padding: 19px 0;
-//         }
-//     }
-// }
+        .count-content {
+            width: 100%;
+            gap: 12px;
 
-// // 桌面设备响应式 (1024px及以上) - 桌面
-// @media screen and (min-width: 1024px) and (max-width: 1440px) {
-//     .count {
-//         width: 100%;
-//         margin: 30px 0;
-//         padding: 20px 0;
+            .card {
+                height: 100px;
+                mask-image: radial-gradient(circle at 55px 12px, transparent 10px, red 10.5px), radial-gradient(closest-side circle at 50%, red 99%, transparent 100%);
+                mask-position: 0 -12px, 51.5px;
 
-//         .count-title {
-//             font-size: 30px;
-//             letter-spacing: 5px;
-//             margin-bottom: 30px;
-//         }
+                .card-left {
+                    width: 55px;
+                    font-size: 20px;
+                }
 
-//         .count-content {
-//             width: 60%;
-//             height: 150px;
-//             margin-left: 100px;
+                .card-right {
+                    padding: 8px 6px;
+                }
 
-//             .card {
-//                 height: calc(100% - 20px);
-//                 margin-right: 10px;
+                .card-info {
+                    font-size: 11px;
+                    line-height: 15px;
+                    padding-bottom: 6px;
+                }
 
-//                 .card-left {
-//                     width: 88px;
-//                     font-size: 30px;
-//                 }
+                .card-btn {
+                    height: 22px;
+                    padding: 0 10px;
+                    font-size: 11px;
 
-//                 .card-right {
-//                     padding: 16px 12px;
+                    &:before {
+                        font-size: 11px;
+                        letter-spacing: 1px;
+                    }
 
-//                     .card-info {
-//                         font-size: 14px;
-//                         margin-top: 20px;
-//                     }
+                    i {
+                        font-size: 11px;
+                        letter-spacing: 1px;
+                    }
+                }
+            }
+        }
 
-//                     .card-btn {
-//                         margin-top: 16px;
-//                         padding: 5px 10px;
-//                         font-size: 12px;
-//                     }
-//                 }
-//             }
-//         }
+        .count-end {
+            font-size: 7px;
+            letter-spacing: 2px;
+            padding: 12px 0;
+        }
+    }
+}
 
-//         .count-end {
-//             font-size: 10px;
-//             letter-spacing: 5px;
-//             padding: 20px 0;
-//         }
-//     }
-// }</style>
+/* 响应式：超小屏手机 */
+@media (max-width: 380px) {
+    .count {
+        .count-content .card {
+            height: 90px;
+            mask-image: radial-gradient(circle at 50px 12px, transparent 10px, red 10.5px), radial-gradient(closest-side circle at 50%, red 99%, transparent 100%);
+            mask-position: 0 -12px, 46.5px;
+
+            .card-left {
+                width: 50px;
+                font-size: 18px;
+            }
+
+            .card-info {
+                font-size: 10px;
+            }
+
+            .card-btn {
+                height: 20px;
+                font-size: 10px;
+            }
+        }
+    }
+}
+</style>

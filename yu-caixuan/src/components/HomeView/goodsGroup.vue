@@ -204,15 +204,102 @@ const handleCategoryClick = (item) => {
     }
 }
 
-// 超小设备响应式 (最大宽度 480px) - 手机竖屏
-@media screen and (max-width: 480px) {
+/* 响应式：平板横屏 */
+@media (max-width: 1200px) {
+    .group {
+        width: 80%;
+
+        .group-title-ch {
+            font-size: 28px;
+        }
+
+        .group-title-en {
+            font-size: 14px;
+        }
+
+        .container {
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 25px;
+
+            .card .face {
+                width: 280px;
+                height: 186px;
+
+                &.face1 {
+                    transform: translateY(93px);
+                }
+
+                &.face2 {
+                    transform: translateY(-93px);
+                }
+            }
+        }
+    }
+}
+
+/* 响应式：平板竖屏 */
+@media (max-width: 992px) {
+    .group {
+        width: 90%;
+
+        .group-title {
+            margin: 25px auto;
+            letter-spacing: 4px;
+            padding-bottom: 18px;
+
+            .group-title-ch {
+                font-size: 26px;
+            }
+
+            .group-title-en {
+                font-size: 13px;
+            }
+        }
+
+        .container {
+            gap: 20px;
+
+            .card .face {
+                width: 240px;
+                height: 160px;
+
+                &.face1 {
+                    transform: translateY(80px);
+
+                    .content h3 {
+                        font-size: 1.3em;
+                        bottom: 12%;
+                    }
+                }
+
+                &.face2 {
+                    transform: translateY(-80px);
+                    padding: 15px;
+
+                    .content p {
+                        font-size: 13px;
+                    }
+
+                    .content button {
+                        margin-top: 12px;
+                        padding: 4px 10px;
+                        font-size: 13px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+/* 响应式：手机横屏 / 小屏 */
+@media (max-width: 768px) {
     .group {
         width: 95%;
-        margin: 0 auto;
 
         .group-title {
             margin: 20px auto;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
             padding-bottom: 15px;
 
             .group-title-ch {
@@ -227,39 +314,34 @@ const handleCategoryClick = (item) => {
         .container {
             flex-direction: column;
             align-items: center;
-            gap: 30px;
+            gap: 25px;
 
-            .card {
-                .face {
-                    width: 100%;
-                    height: 180px;
+            .card .face {
+                width: 100%;
+                max-width: 360px;
+                height: 180px;
 
-                    &.face1 {
-                        transform: translateY(80px);
+                &.face1 {
+                    transform: translateY(90px);
 
-                        .content {
-                            h3 {
-                                font-size: 1.3em;
-                                bottom: 10%;
-                            }
-                        }
-                    }
-
-                    &.face2 {
-                        transform: translateY(-80px);
-                        padding: 15px;
+                    .content h3 {
+                        font-size: 1.3em;
+                        bottom: 10%;
                     }
                 }
 
-                &:hover {
-                    .face {
-                        &.face1 {
-                            transform: translateY(0);
-                        }
+                &.face2 {
+                    transform: translateY(-90px);
+                    padding: 15px;
 
-                        &.face2 {
-                            transform: translateY(0);
-                        }
+                    .content p {
+                        font-size: 13px;
+                    }
+
+                    .content button {
+                        margin-top: 10px;
+                        padding: 6px 12px;
+                        font-size: 13px;
                     }
                 }
             }
@@ -267,62 +349,55 @@ const handleCategoryClick = (item) => {
     }
 }
 
-// 小型设备响应式 (481px - 767px) - 手机横屏
-@media screen and (min-width: 481px) and (max-width: 767px) {
+/* 响应式：手机竖屏 */
+@media (max-width: 576px) {
     .group {
-        width: 90%;
-        margin: 0 auto;
+        width: 100%;
+        padding: 0 15px;
 
         .group-title {
-            margin: 25px auto;
-            letter-spacing: 3px;
-            padding-bottom: 18px;
+            margin: 20px auto;
+            letter-spacing: 2px;
+            padding-bottom: 15px;
 
             .group-title-ch {
-                font-size: 26px;
+                font-size: 22px;
             }
 
             .group-title-en {
-                font-size: 13px;
+                font-size: 11px;
             }
         }
 
         .container {
-            flex-wrap: wrap;
-            justify-content: center;
             gap: 20px;
 
-            .card {
-                .face {
-                    width: 220px;
-                    height: 160px;
+            .card .face {
+                max-width: 100%;
+                height: 160px;
 
-                    &.face1 {
-                        transform: translateY(70px);
+                &.face1 {
+                    transform: translateY(80px);
 
-                        .content {
-                            h3 {
-                                font-size: 1.2em;
-                                bottom: 10%;
-                            }
-                        }
-                    }
-
-                    &.face2 {
-                        transform: translateY(-70px);
-                        padding: 15px;
+                    .content h3 {
+                        font-size: 1.2em;
+                        bottom: 8%;
                     }
                 }
 
-                &:hover {
-                    .face {
-                        &.face1 {
-                            transform: translateY(0);
-                        }
+                &.face2 {
+                    transform: translateY(-80px);
+                    padding: 12px;
 
-                        &.face2 {
-                            transform: translateY(0);
-                        }
+                    .content p {
+                        font-size: 12px;
+                        line-height: 1.5;
+                    }
+
+                    .content button {
+                        margin-top: 8px;
+                        padding: 5px 10px;
+                        font-size: 12px;
                     }
                 }
             }
@@ -330,71 +405,31 @@ const handleCategoryClick = (item) => {
     }
 }
 
-// 平板设备响应式 (768px - 1024px) - 平板
-@media screen and (min-width: 768px) and (max-width: 1024px) {
+/* 响应式：超小屏手机 */
+@media (max-width: 380px) {
     .group {
-        width: 85%;
-        margin: 0 auto;
+        .container .card .face {
+            height: 150px;
 
-        .group-title {
-            margin: 25px auto;
-            letter-spacing: 4px;
-            padding-bottom: 18px;
+            &.face1 {
+                transform: translateY(75px);
 
-            .group-title-ch {
-                font-size: 28px;
-            }
-
-            .group-title-en {
-                font-size: 14px;
-            }
-        }
-
-        .container {
-            .card {
-                .face {
-                    width: 240px;
-                    height: 170px;
-
-                    &.face1 {
-                        transform: translateY(80px);
-
-                        .content {
-                            h3 {
-                                font-size: 1.3em;
-                            }
-                        }
-                    }
-
-                    &.face2 {
-                        transform: translateY(-80px);
-                    }
+                .content h3 {
+                    font-size: 1.1em;
                 }
             }
-        }
-    }
-}
 
-// 桌面设备响应式 (1024px及以上) - 桌面
-@media screen and (min-width: 1024px) and (max-width: 1440px) {
-    .group {
-        width: 60%;
-        margin: 0 auto;
+            &.face2 {
+                transform: translateY(-75px);
+                padding: 10px;
 
-        .container {
-            margin-left: -150px;
-            .card {
-                .face {
-                    width: 300px;
-                    height: 200px;
+                .content p {
+                    font-size: 11px;
+                }
 
-                    &.face1 {
-                        transform: translateY(100px);
-                    }
-
-                    &.face2 {
-                        transform: translateY(-100px);
-                    }
+                .content button {
+                    margin-top: 6px;
+                    font-size: 11px;
                 }
             }
         }

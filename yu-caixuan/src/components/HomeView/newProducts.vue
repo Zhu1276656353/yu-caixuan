@@ -339,8 +339,255 @@ const toProductDetail = (item) => {
                 }
             }
         }
+    }
+}
 
+/* 响应式：平板横屏 */
+@media (max-width: 1200px) {
+    .newProducts {
+        .newProducts-content {
+            width: 80%;
+            gap: 30px;
+        }
 
+        .newProducts-title-ch {
+            font-size: 26px;
+        }
+
+        .newProducts-title-en {
+            font-size: 14px;
+        }
+    }
+}
+
+/* 响应式：平板竖屏 */
+@media (max-width: 992px) {
+    .newProducts {
+        padding: 20px 0 40px 0;
+
+        .newProducts-title {
+            margin: 20px auto;
+            letter-spacing: 3px;
+
+            .newProducts-title-ch {
+                font-size: 24px;
+            }
+
+            .newProducts-title-en {
+                font-size: 13px;
+            }
+        }
+
+        .newProducts-content {
+            width: 90%;
+            margin: 20px auto;
+            gap: 25px;
+            justify-content: center;
+
+            .card {
+                width: 48%;
+                height: 240px;
+
+                &:nth-child(1),
+                &:nth-child(2) {
+                    width: 48%;
+                    height: 260px;
+                }
+
+                .card-content .card-title {
+                    font-size: 16px;
+                }
+
+                .card-content .card-price span {
+                    font-size: 18px;
+                }
+
+                .card-btn {
+                    font-size: 12px;
+                }
+            }
+        }
+    }
+}
+
+/* 响应式：手机横屏 / 小屏 */
+@media (max-width: 768px) {
+    .newProducts {
+        padding: 15px 0 30px 0;
+
+        .newProducts-title {
+            margin: 15px auto;
+            padding-bottom: 15px;
+
+            .newProducts-title-ch {
+                font-size: 22px;
+            }
+
+            .newProducts-title-en {
+                font-size: 12px;
+            }
+        }
+
+        .newProducts-content {
+            width: 95%;
+            margin: 15px auto;
+            gap: 20px;
+
+            .card {
+                width: 48%;
+                height: 220px;
+                border-radius: 16px;
+
+                &:nth-child(1),
+                &:nth-child(2) {
+                    width: 48%;
+                    height: 240px;
+
+                    .card-btn {
+                        width: 80%;
+                    }
+                }
+
+                .card-badge {
+                    width: 90px;
+                    height: 90px;
+
+                    &::before {
+                        font-size: 12px;
+                        height: 32px;
+                        width: 130%;
+                    }
+                }
+
+                .top-card {
+                    border-top-left-radius: 16px;
+                    border-top-right-radius: 16px;
+                }
+
+                .bottom-card {
+                    border-bottom-left-radius: 16px;
+                    border-bottom-right-radius: 16px;
+                }
+
+                .card-content {
+                    .card-info {
+                        width: 90%;
+                        margin-bottom: 6px;
+                    }
+
+                    .card-title {
+                        font-size: 14px;
+                    }
+
+                    .card-price span {
+                        font-size: 16px;
+                    }
+
+                    .card-btn {
+                        width: 70%;
+                        font-size: 11px;
+                        padding: 6px 12px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+/* 响应式：手机竖屏 */
+@media (max-width: 576px) {
+    .newProducts {
+        padding: 20px 15px 30px 15px;
+
+        .newProducts-title {
+            margin: 20px auto;
+            letter-spacing: 2px;
+
+            .newProducts-title-ch {
+                font-size: 20px;
+            }
+
+            .newProducts-title-en {
+                font-size: 11px;
+            }
+        }
+
+        .newProducts-content {
+            width: 100%;
+            margin: 15px auto;
+            gap: 20px;
+            flex-direction: column;
+            align-items: center;
+
+            .card {
+                width: 100%;
+                max-width: 360px;
+                height: 280px;
+
+                &:nth-child(1),
+                &:nth-child(2) {
+                    width: 100%;
+                    max-width: 360px;
+                    height: 300px;
+
+                    .card-btn {
+                        width: 80%;
+                    }
+                }
+
+                .card-badge {
+                    width: 80px;
+                    height: 80px;
+
+                    &::before {
+                        font-size: 11px;
+                        height: 28px;
+                        letter-spacing: 0.05em;
+                    }
+                }
+
+                .card-content {
+                    .card-info {
+                        width: 85%;
+                    }
+
+                    .card-title {
+                        font-size: 16px;
+                    }
+
+                    .card-price span {
+                        font-size: 18px;
+                    }
+
+                    .card-btn {
+                        width: 75%;
+                        font-size: 12px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+/* 响应式：超小屏手机 */
+@media (max-width: 380px) {
+    .newProducts {
+        .newProducts-content .card {
+            height: 250px;
+
+            &:nth-child(1),
+            &:nth-child(2) {
+                height: 270px;
+            }
+
+            .card-content .card-title {
+                font-size: 14px;
+            }
+
+            .card-content .card-price span {
+                font-size: 16px;
+            }
+        }
     }
 }
 </style>

@@ -157,6 +157,16 @@ const login = () => {
             loginStore.token = res.data.token
             loginStore.username = res.data.username
             loginStore.permission = res.data.permission
+            // 如果后端返回了过期时间，则存储并格式化展示
+            if (res.data.expiresAt) {
+                loginStore.expiresAt = res.data.expiresAt;
+                const expireDate = new Date(res.data.expiresAt);
+                const formatted = `${expireDate.getFullYear()}-${String(expireDate.getMonth() + 1).padStart(2, '0')}-${String(expireDate.getDate()).padStart(2, '0')} ${String(expireDate.getHours()).padStart(2, '0')}:${String(expireDate.getMinutes()).padStart(2, '0')}:${String(expireDate.getSeconds()).padStart(2, '0')}`
+                ElMessage.success(`登录成功，token 有效期为 7 天，将在 ${formatted} 失效`)
+            } else {
+                // 后端未返回过期时间时的兜底提示
+                ElMessage.success('登录成功，当前会话 token 有效期为 7 天')
+            }
             // 登录成功，跳转到首页
             router.push('/')
             loginStore.isLogin = true;
