@@ -114,9 +114,10 @@ const api = {
     /**
      * 后台管理接口
      */
-    //获取所有用户接口
-    getBackendUsers() {
-        return request.get(base.baseUrl + base.backendUsers)
+    //获取所有用户接口（支持分页）
+    getBackendUsers(params) {
+        // params 期望形如：{ params: { page: 1 } }
+        return request.get(base.baseUrl + base.backendUsers, params)
     },
     //添加用户接口
     getBackendUsersAdd(params) {

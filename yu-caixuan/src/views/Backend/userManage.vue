@@ -34,6 +34,8 @@
                     </template>
                 </el-table-column>
             </el-table>
+            <el-pagination class="pagination" background layout="prev, pager, next" :total="total"
+                :current-page="currentPage" :page-size="pageSize" @current-change="handlePageChange" />
         </div>
         <!-- 添加用户视图 -->
         <el-dialog v-model="dialogAddVisible" title="添加用户" Width="25%" center>
@@ -99,24 +101,45 @@ import api from '@/api/index.js';
 //搜索内容
 const tableData = ref([]);
 
+/**
+ * 分页
+ */
+const total = ref(0);
+const currentPage = ref(1);
+const pageSize = ref(10);
+
 onMounted(() => {
-    http();
+    http(1);
 })
 /**
- * 查询用户数据
+ * 查询用户数据（分页）
  */
-const http = () => {
-    api.getBackendUsers().then(res => {
-        // 确保将数组数据赋值给 tableData
-        if (Array.isArray(res.data.data)) {
+const http = (page = 1) => {
+    api.getBackendUsers({ params: { page } }).then(res => {
+        if (res.data && res.data.status === 200 && Array.isArray(res.data.data)) {
             tableData.value = res.data.data;
+            if (res.data.pagination) {
+                total.value = res.data.pagination.total;
+                currentPage.value = res.data.pagination.currentPage;
+                pageSize.value = res.data.pagination.pageSize;
+            } else {
+                // 兼容无分页字段的情况
+                total.value = res.data.total || res.data.data.length;
+                currentPage.value = page;
+                pageSize.value = pageSize.value || 10;
+            }
         } else {
             tableData.value = [];
+            total.value = 0;
         }
     }).catch(error => {
         console.error('获取用户数据失败:', error);
         tableData.value = [];
+        total.value = 0;
     });
+}
+const handlePageChange = (page) => {
+    http(page);
 }
 /**
  * 添加用户信息
@@ -239,7 +262,7 @@ const sureUpdateUserHandler = () => {
 const search = ref('');
 const searchHandler = () => {
     if (!search.value.trim()) {
-        http();
+        http(1);
         ElMessage({
             message: `搜索内容不能为空`,
             type: 'warning'
@@ -249,8 +272,14 @@ const searchHandler = () => {
     api.getBackendUsersSearch({ search: search.value.trim() }).then(res => {
         if (res.data.status === 200) {
             tableData.value = res.data.data || [];
+            // 搜索结果不走后台分页，这里将分页信息重置为当前结果集
+            total.value = tableData.value.length;
+            currentPage.value = 1;
+            pageSize.value = tableData.value.length || 10;
             if (tableData.value.length === 0) {
                 ElMessage.info('未找到匹配的用户');
+            } else {
+                ElMessage.success('查询成功');
             }
         } else {
             ElMessage.error(res.data.msg || '搜索用户失败');

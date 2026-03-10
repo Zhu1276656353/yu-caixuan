@@ -725,15 +725,34 @@ router.post("/checkout", (req, res) => {
     });
 });
 /**
- * 后台管理系统 - 用户管理接口
+ * 后台管理系统 - 用户管理接口（分页）
  */
 router.get("/backend/users", (req, res) => {
-    const sql = "SELECT id, username, phone, email, permission FROM user"; // 避免返回密码字段
+    // 分页处理
+    const page = parseInt(req.query.page) || 1; // 当前页码，默认为 1
+    const pageSize = 10; // 每页显示的数据条数
+    const offset = (page - 1) * pageSize; // 计算偏移量
+
+    // 查询当前页数据（避免返回密码字段）
+    const sql = `SELECT id, username, phone, email, permission FROM user ORDER BY id DESC LIMIT ${pageSize} OFFSET ${offset}`;
+    // 查询总记录数
+    const countSql = "SELECT COUNT(*) as total FROM user";
+
     sqlConnect(sql, null, result => {
-        res.send({
-            status: 200,
-            data: result,
-            total: result.length
+        sqlConnect(countSql, null, countResult => {
+            const total = countResult[0].total;
+            const totalPages = Math.ceil(total / pageSize);
+
+            res.send({
+                status: 200,
+                data: result,
+                pagination: {
+                    currentPage: page,
+                    pageSize: pageSize,
+                    total: total,
+                    totalPages: totalPages
+                }
+            });
         });
     });
 });
