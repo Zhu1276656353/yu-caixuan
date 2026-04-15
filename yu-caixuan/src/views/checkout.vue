@@ -24,7 +24,7 @@
                         <div class="item-total">小计: ¥{{ (item.price * item.quantity).toFixed(2) }}</div>
                     </div>
                 </div>
-
+                <!-- 订单总价格 -->
                 <div class="order-summary">
                     <div class="summary-item">
                         <span>商品总价:</span>
@@ -232,12 +232,12 @@ const submitOrder = () => {
     })
 }
 // 查看订单详情
-const checkOrder = () =>{
+const checkOrder = () => {
     ElMessageBox.confirm('查询订单请添加微信:18226254503,并备注订单号', '提示', {
-                        confirmButtonText: '确定',
-                        cancelButtonText: '取消',
-                        type: 'warning',
-                    })
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+    })
 }
 // 页面加载时检查购物车
 onMounted(() => {
@@ -251,7 +251,6 @@ onMounted(() => {
 <style lang="scss" scoped>
 .checkout {
     padding: 20px;
-    background-color: #f5f5f5;
     min-height: calc(100vh - 350px);
     margin-bottom: 5vh;
 }
@@ -259,12 +258,18 @@ onMounted(() => {
 .checkout-container {
     max-width: 1200px;
     margin: 0 auto;
-    background: white;
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 8px;
     padding: 20px;
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
-
+.step-content{
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    border-radius: 5px;
+}
 .checkout-steps {
     margin-bottom: 30px;
 }
@@ -328,7 +333,7 @@ onMounted(() => {
 }
 
 .order-summary {
-    background: #f9f9f9;
+    background: rgba(255, 255, 255, 0.6);
     padding: 20px;
     border-radius: 5px;
     margin-bottom: 20px;
@@ -378,7 +383,8 @@ onMounted(() => {
     .order-warn {
         margin-bottom: 10px;
         font-size: 16px;
-        span{
+
+        span {
             font-weight: bold;
             color: orangered;
         }
