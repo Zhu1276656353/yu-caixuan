@@ -1,6 +1,6 @@
 <template>
     <div class="upload-view">
-        <h1>文件上传</h1>
+        <h1>商品上传</h1>
         <!-- 上传表单 -->
         <el-card class="upload-card">
             <el-form :model="uploadForm" label-width="120px">

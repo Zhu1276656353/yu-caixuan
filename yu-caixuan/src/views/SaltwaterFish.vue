@@ -1,7 +1,7 @@
 <template>
     <div class="saltwater-fish">
         <div class="search">
-            <div class="title">海水生物</div>
+            <div class="title">海洋生物</div>
             <div class="search-box">
                 <div class="input-group">
                     <input required type="text" v-model="input" @keyup.enter="searchHandler" autocomplete="off"

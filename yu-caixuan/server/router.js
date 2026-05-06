@@ -55,12 +55,27 @@ router.post('/uploads', upload.single('file'), (req, res) => {
     // 如果提供了产品ID，则更新现有产品
     if (productId) {
         console.log('更新产品图片,产品ID:', productId);
+
+        // 根据类型确定目标表
+        let targetTable;
+        switch (productType) {
+            case 'fishtool':
+                targetTable = 'fishtool';
+                break;
+            case 'freshwaterfish':
+                targetTable = 'freshwaterfish';
+                break;
+            case 'saltwaterfish':
+                targetTable = 'saltwaterfish';
+                break;
+            default:
+                targetTable = 'fishtool'; // 默认表
+        }
+
         /**
-         * 
-         * ！！！！！更新指定产品的image字段
-         * 
+         * 这里只能更新图片！！！！！！更新指定产品的image字段
          */
-        const sql = `UPDATE picture SET image = ? WHERE id = ?`;
+        const sql = `UPDATE ${targetTable} SET image = ? WHERE id = ?`;
         const params = [fileInfo.path, productId];
         console.log('执行SQL:', sql, '参数:', params);
 

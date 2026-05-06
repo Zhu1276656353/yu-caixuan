@@ -66,6 +66,7 @@
                             </div>
                         </template>
                     </el-image>
+                    <span>修改图片请到商品上传界面修改</span>
                 </el-form-item>
                 <el-form-item label="商品介绍" prop="introduce">
                     <el-input v-model="goodsUpdateForm.introduce" type="textarea" :rows="4"></el-input>

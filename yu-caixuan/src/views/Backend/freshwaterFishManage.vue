@@ -56,7 +56,6 @@
                     <el-input v-model="goodsUpdateForm.price" type="number"></el-input>
                 </el-form-item>
                 <el-form-item label="图片" prop="image">
-                    <!-- <el-input v-model="goodsUpdateForm.image" type="text" disabled></el-input> -->
                     <el-image :src="'http://localhost:3000' + goodsUpdateForm.image" class="form-product-image"
                         fit="cover" lazy>
                         <template #error>
@@ -66,6 +65,7 @@
                             </div>
                         </template>
                     </el-image>
+                    <span>修改图片请到商品上传界面修改</span>
                 </el-form-item>
 
                 <el-form-item label="商品介绍" prop="introduce">
@@ -218,41 +218,3 @@ const searchHandler = () => {
     })
 }
 </script>
-<!-- <style scoped>
-/* 表格整体背景 */
-:deep(.el-table) {
-    background-color: #f9f9f9;
-}
-
-/* 表头背景 */
-:deep(.el-table__header-wrapper th) {
-    background-color: rgba(249, 249, 249, 0.8);
-    /* 表头背景 */
-    color: #333;
-    /* 表头文字颜色 */
-}
-
-/* 表格行背景（默认状态） */
-:deep(.el-table__row) {
-    background-color: rgba(249, 249, 249, 0.8);
-    /* 行背景 */
-}
-
-/* 表格行背景（hover 状态） */
-:deep(.el-table__row:hover) {
-    background-color: #f0f8ff;
-    /* hover 时的背景 */
-}
-
-/* 表格行背景（选中状态） */
-:deep(.el-table__row.current-row) {
-    background-color: #e6f7ff;
-    /* 选中行的背景 */
-}
-
-/* 单元格背景 */
-:deep(.el-table__cell) {
-    background-color: inherit;
-    /* 继承行的背景 */
-}
-</style> -->

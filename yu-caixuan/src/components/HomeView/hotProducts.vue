@@ -122,16 +122,13 @@ const toProductDetail = (item) => {
     }
 
     .hotProducts-content {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 30px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px 70px;
         margin: 0px auto;
 
         // 热销卡片
         .parent {
-            width: 300px;
             perspective: 1000px;
             cursor: pointer;
 
@@ -261,6 +258,25 @@ const toProductDetail = (item) => {
                     }
                 }
             }
+        }
+    }
+}
+
+/* 响应式：小屏幕 */
+@media (max-width: 992px) {
+    .hotProducts {
+        .hotProducts-content {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+    }
+}
+
+@media (max-width: 576px) {
+    .hotProducts {
+        .hotProducts-content {
+            grid-template-columns: 1fr;
+            gap: 15px;
         }
     }
 }
