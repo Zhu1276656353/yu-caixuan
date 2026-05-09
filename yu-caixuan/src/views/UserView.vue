@@ -1,15 +1,5 @@
 <template>
     <div class="userInfo">
-        <!-- <div class="userInfo-card">
-            <div class="userInfo-title">用户信息</div>
-            <div class="userInfo-content">
-                <p class="userInfo-content-item">用户名: <span>{{ userInfo.list.username }}</span></p>
-                <p class="userInfo-content-item">密码: <span>{{ userInfo.list.password }}</span></p>
-                <p class="userInfo-content-item">手机号: <span>{{ userInfo.list.phone }}</span></p>
-                <p class="userInfo-content-item">邮箱: <span>{{ userInfo.list.email }}</span></p>
-            </div>
-            <div class="btn"><el-button round class="btn-btn" @click="dialogVisible = true">修改信息</el-button></div>
-        </div> -->
         <div class="userInfo-card">
             <div class="userInfo-header">
                 <div class="userInfo-title">用户信息</div>
@@ -123,7 +113,7 @@ const refreshUserInfo = () => {
 }
 // 修改用户信息处理函数
 const updateUserInfoHandler = () => {
-    api.getUpdateUserInfo(updateUserInfo).then(res => {
+    api.postUpdateUserInfo(updateUserInfo).then(res => {
         if (res.data.status === 200) {
             ElMessage({
                 message: '更新用户信息成功',
@@ -131,6 +121,9 @@ const updateUserInfoHandler = () => {
             })
             // 刷新用户信息
             refreshUserInfo();
+            // 刷新用户信息后，更新用户信息
+            loginStore.username = res.data.data.username;
+            // console.log('更新token:', loginStore.token);
         } else {
             ElMessage.error('更新用户信息失败')
         }
@@ -167,7 +160,7 @@ const updateUserInfoHandler = () => {
         .userInfo-content {
             width: 100%;
             display: flex;
-            flex-direction: column;  
+            flex-direction: column;
             justify-content: space-around;
 
             .userInfo-content-item {

@@ -91,7 +91,7 @@ const api = {
         return request.get(base.baseUrl + base.userInfo, { params })
     },
     //更新用户信息接口
-    getUpdateUserInfo(params) {
+    postUpdateUserInfo(params) {
         return request.post(base.baseUrl + base.updateUserInfo, params)
     },
     // 添加获取商品详情的方法

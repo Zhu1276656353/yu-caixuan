@@ -615,20 +615,69 @@ router.get("/userInfo", (req, res) => {
  * 更新用户信息接口
  */
 router.post('/updateUserInfo', function (req, res) {
+    console.log('收到更新用户信息请求');
+    console.log('请求体:', req.body);
+    console.log('请求头:', req.headers);
+    
     const { username, password, phone, email } = req.body;
-    const sql = `update user set username='${username}',password='${password}',phone='${phone}',email='${email}' where username='${username}'`;
-    sqlConnect(sql, null, result => {
-        if (result.affectedRows > 0) {
-            res.send({
-                status: 200,
-                msg: '用户信息更新成功'
-            });
-        } else {
-            res.send({
-                status: 500,
-                msg: '用户信息更新失败'
+    
+    // 从请求头获取token
+    const token = req.headers.authorization;
+    console.log('获取到的token:', token);
+    
+    if (!token) {
+        console.log('未提供token');
+        return res.send({
+            status: 401,
+            msg: '未登录，请先登录'
+        });
+    }
+    
+    // 验证token并获取用户ID
+    jsonwebtoken.verify(token, jsonwebtokenSecret.secret, (err, decoded) => {
+        if (err) {
+            console.error('Token验证失败:', err);
+            return res.send({
+                status: 401,
+                msg: '登录已过期，请重新登录'
             });
         }
+        
+        const userId = decoded.id;
+        console.log('解析出的用户ID:', userId);
+        console.log('要更新的数据:', { username, password, phone, email });
+        
+        // 使用用户ID作为WHERE条件，安全更新用户信息
+        const sql = `UPDATE user SET username=?, password=?, phone=?, email=? WHERE id=?`;
+        const params = [username, password, phone, email, userId];
+        console.log('执行SQL:', sql, '参数:', params);
+        
+        sqlConnect(sql, params, result => {
+            console.log('SQL执行结果:', result);
+            if (result.affectedRows > 0) {
+                // 更新成功后，查询用户最新信息
+                const selectSql = `SELECT id, username, phone, email FROM user WHERE id = ?`;
+                sqlConnect(selectSql, [userId], userResult => {
+                    if (userResult.length > 0) {
+                        res.send({
+                            status: 200,
+                            msg: '用户信息更新成功',
+                            data: userResult[0]
+                        });
+                    } else {
+                        res.send({
+                            status: 200,
+                            msg: '用户信息更新成功'
+                        });
+                    }
+                });
+            } else {
+                res.send({
+                    status: 500,
+                    msg: '用户信息更新失败'
+                });
+            }
+        });
     });
 })
 /**
