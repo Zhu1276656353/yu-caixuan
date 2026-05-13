@@ -91,7 +91,7 @@ onMounted(() => {
 
     .content-section {
         .intro-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #95e9d2 0%, #34a6df 100%);
             color: white;
             padding: 30px;
             border-radius: 10px;

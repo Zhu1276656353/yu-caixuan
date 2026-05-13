@@ -270,7 +270,7 @@ const closeModal = () => {
     align-items: center;
     justify-content: space-between;
     padding: 20px 30px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #efaf96 0%, #ec5047 100%);
     color: white;
     border-bottom: 1px solid #e0e0e0;
 
@@ -338,7 +338,7 @@ const closeModal = () => {
 .book-cover-page {
     width: 350px;
     height: 500px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #efaf96 0%, #ec5047 100%);
     border-radius: 10px 20px 20px 10px;
     box-shadow: 
         0 10px 40px rgba(0, 0, 0, 0.3),

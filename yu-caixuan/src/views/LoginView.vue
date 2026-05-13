@@ -133,8 +133,8 @@ const isLogin = ref(true)
 
 const loginForm = reactive({
     token: '',
-    username: 'admin',
-    currentPassword: '123456',
+    username: '',
+    currentPassword: '',
 })
 
 const registerForm = reactive({
