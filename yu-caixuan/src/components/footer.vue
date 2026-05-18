@@ -12,7 +12,7 @@
                     </div>
                 </div>
             </div>
-            <p class="footer-line">© 2025 鱼彩轩 All Rights Reserved. 备案号：XXXXXX</p>
+            <p class="footer-line">© 2025 鱼彩轩 All Rights Reserved</p>
         </div>
     </div>
 
