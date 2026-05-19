@@ -51,6 +51,8 @@ const logoutHandler = () => {
     loginStore.username = '';
     loginStore.isLogin = false;
     cartStore.cartItems = [];//清空购物车
+    cartStore.setActiveCoupon('');//清空优惠券id
+    cartStore.coupons = [];//清空优惠券
     // router.push('/login');
     router.replace('/login').then(() => {
         window.location.reload();
