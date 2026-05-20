@@ -50,6 +50,7 @@ const logoutHandler = () => {
     loginStore.token = '';
     loginStore.username = '';
     loginStore.isLogin = false;
+    loginStore.permission = ''; //清空权限
     cartStore.cartItems = [];//清空购物车
     cartStore.setActiveCoupon('');//清空优惠券id
     cartStore.coupons = [];//清空优惠券
