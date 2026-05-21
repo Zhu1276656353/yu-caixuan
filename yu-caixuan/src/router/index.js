@@ -156,6 +156,12 @@ const router = createRouter({
         }
       ]
     },
+    // 404路由错误处理
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'NotFound',
+      component: () => import('../views/NotFound.vue'),
+    },
 
   ],
 })
