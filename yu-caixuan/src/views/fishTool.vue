@@ -278,7 +278,7 @@ const toProductDetail = (item) => {
             // 悬停卡片容器
             .card-container {
                 width: 30%;
-                height: 300px;
+                height: 400px;
                 position: relative;
                 border-radius: 20px;
                 box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
@@ -289,7 +289,7 @@ const toProductDetail = (item) => {
                 &:nth-child(5n+1),
                 &:nth-child(5n+2) {
                     width: 48%;
-                    height: 300px;
+                    height: 400px;
                 }
 
                 &:hover {

@@ -6,8 +6,8 @@
                 <div class="input-group">
                     <input required type="text" v-model="input" @keyup.enter="searchHandler" autocomplete="off"
                         placeholder=" " class="input">
-                    <label class="user-label">请输入要查询的商品</label>
-                    <el-button @click="searchHandler" icon="Search" class="search-button" />
+                        <label class="user-label">请输入要查询的商品</label>
+                        <el-button @click="searchHandler" icon="Search" class="search-button" />
                 </div>
             </div>
         </div>
@@ -78,7 +78,7 @@ const searchHandler = () => {
         // 如果搜索框为空，重置为普通模式
         isSearchMode.value = false;
         fetchData(1);
-         ElMessage({
+        ElMessage({
             message: `暂无数据，已显示全部商品`,
             type: 'warning'
         });
@@ -292,6 +292,12 @@ const toProductDetail = (item) => {
                     width: 48%;
                     height: 300px;
                 }
+                //第四第五个才变大：布局3 2 3 2
+                // &:nth-child(5n+4),
+                // &:nth-child(5n+5) {
+                //     width: 48%;
+                //     height: 300px;
+                // }
 
                 &:hover {
                     transform: translateY(-5px) scale(1.02) perspective(1000px) rotateY(5deg) rotateX(5deg);

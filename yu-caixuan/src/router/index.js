@@ -169,16 +169,32 @@ const router = createRouter({
 router.beforeEach((to, form, next) => {
   if (to.meta.requireAuth) {
     const loginStore = useLoginStore()
-    let token = loginStore.token
+    let token = loginStore.token;
     if (token) {
-      next()
+      next();
     } else {
       next({
-        path: '/login'
+        path: '/login',
       })
     }
   } else {
-    next()
+    next();
+  }
+})
+//没有admin权限不跳转后台管理系统
+router.beforeEach((to, form, next) => {
+  if (to.path.startsWith('/backend')) {
+    const loginStore = useLoginStore()
+    let permission = loginStore.permission;
+    if (permission === 'admin') {
+      next();
+    } else {
+      next({
+        path: '/',
+      })
+    }
+  } else {
+    next();
   }
 })
 export default router
